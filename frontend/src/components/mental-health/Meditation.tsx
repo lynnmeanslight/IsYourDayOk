@@ -9,6 +9,7 @@ interface MeditationProps {
 export function Meditation({ contracts }: MeditationProps) {
   const [isActive, setIsActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60); // 60 seconds = 1 minute
+  const [preparationTime, setPreparationTime] = useState(0); // 5 second prep countdown
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -30,6 +31,31 @@ export function Meditation({ contracts }: MeditationProps) {
 
     checkMeditationEligibility();
   }, [contracts]);
+
+  // Handle preparation countdown (5 seconds)
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (preparationTime > 0) {
+      interval = setInterval(() => {
+        setPreparationTime((prev) => {
+          const newTime = prev - 1;
+          
+          // Countdown announcements
+          if (newTime > 0) {
+            speak(newTime.toString());
+          } else if (newTime === 0) {
+            speak('Begin meditation. Take a deep breath and relax.');
+            setIsActive(true); // Start the actual meditation
+          }
+          
+          return newTime;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [preparationTime]);
 
   const handleComplete = useCallback(async () => {
     setIsActive(false);
@@ -97,14 +123,15 @@ export function Meditation({ contracts }: MeditationProps) {
       return;
     }
 
-    setIsActive(true);
+    setPreparationTime(5); // Start 5-second preparation countdown
     setTimeLeft(60);
     setError('');
-    speak('Starting 1 minute meditation. Take a deep breath and relax.');
+    speak('Get ready to meditate. Starting in 5 seconds.');
   };
 
   const handleStop = () => {
     setIsActive(false);
+    setPreparationTime(0); // Also stop preparation if paused during prep
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
@@ -113,6 +140,7 @@ export function Meditation({ contracts }: MeditationProps) {
   const handleReset = () => {
     handleStop();
     setTimeLeft(60);
+    setPreparationTime(0);
     setError('Meditation session cancelled. You can start again.');
   };
 
@@ -172,9 +200,18 @@ export function Meditation({ contracts }: MeditationProps) {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-7xl font-bold text-blue-600">{formatTime(timeLeft)}</span>
-              {isActive && (
-                <span className="text-sm text-gray-500 mt-3 animate-pulse">Breathe...</span>
+              {preparationTime > 0 ? (
+                <>
+                  <span className="text-7xl font-bold text-orange-500 animate-pulse">{preparationTime}</span>
+                  <span className="text-sm text-gray-500 mt-3">Get ready...</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-7xl font-bold text-blue-600">{formatTime(timeLeft)}</span>
+                  {isActive && (
+                    <span className="text-sm text-gray-500 mt-3 animate-pulse">Breathe...</span>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -182,13 +219,22 @@ export function Meditation({ contracts }: MeditationProps) {
 
         {/* Controls */}
         <div className="space-y-3">
-          {!isActive && timeLeft === 60 && (
+          {!isActive && !preparationTime && timeLeft === 60 && (
             <button
               onClick={handleStart}
               disabled={!canStart || loading}
               className="w-full bg-blue-600 text-white rounded-2xl px-6 py-5 font-semibold text-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {!canStart ? '✓ Completed Today' : '🧘 Start Meditation'}
+            </button>
+          )}
+
+          {preparationTime > 0 && (
+            <button
+              onClick={handleReset}
+              className="w-full bg-orange-500 text-white rounded-2xl px-6 py-5 font-semibold text-lg hover:bg-orange-600 transition-all shadow-lg"
+            >
+              ✕ Cancel Preparation
             </button>
           )}
 
