@@ -2,14 +2,6 @@ import { METADATA } from "../../../lib/utils";
 
 export async function GET() {
   const config = {
-    accountAssociation: {
-      header:
-        "eyJmaWQiOjg3NzAwMSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweEJDN2EzRTVEZDFFOWY3MjU4MDY1YzU1Y0EzNjNlNjJiZTRFNTYxYjAifQ",
-      payload:
-        "eyJkb21haW4iOiJyZWFyLXZhbC1mb3J0eS1zb2NjZXIudHJ5Y2xvdWRmbGFyZS5jb20ifQ",
-      signature:
-        "wgeqLbHClrOLhYESa3uydL4XB5PxkSwxdU/dKko0V0pKlbeZFR7OjqA8SN+MYSqZhY0G30/LqnATVUVEiwKScBw=",
-    },
     frame: {
       version: "1",
       name: METADATA.name,
