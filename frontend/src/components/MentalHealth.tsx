@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import { useFrameContext } from "./providers/FrameProvider";
 import { useContracts } from "~/lib/useContracts";
+import { useAutoSwitchChain } from "~/lib/useAutoSwitchChain";
 import { Dashboard } from "./mental-health/Dashboard";
 import { MoodLog } from "./mental-health/MoodLog";
 import { Journal } from "./mental-health/Journal";
@@ -33,6 +34,9 @@ export function MentalHealth() {
   const [currentView, setCurrentView] = useState<View>("dashboard");
   const [showMintModal, setShowMintModal] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<any>(null);
+  
+  // Auto-switch to Base Sepolia
+  const { isCorrectChain, isSwitching, switchError } = useAutoSwitchChain();
 
   const farcasterUser =
     frameContext?.context && "user" in frameContext.context
@@ -60,6 +64,41 @@ export function MentalHealth() {
     setSelectedAchievement(achievement);
     setShowMintModal(true);
   };
+
+  // Show switching network screen
+  if (isConnected && isSwitching) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-700 font-medium">Switching to Base Sepolia...</p>
+          <p className="text-sm text-gray-500 mt-2">Please confirm in your wallet</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if chain switch failed
+  if (isConnected && switchError && !isCorrectChain) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white p-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold mb-2">Wrong Network</h2>
+          <p className="text-gray-600 mb-4">
+            Please switch to Base Sepolia network to use this app.
+          </p>
+          <p className="text-sm text-red-600 mb-4">{switchError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (contracts.loading) {
     return (
