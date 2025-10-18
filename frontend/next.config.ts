@@ -2,6 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  async redirects() {
+    return [
+      {
+        source: "/.well-known/farcaster.json",
+        destination: "https://api.farcaster.xyz/miniapps/hosted-manifest/0199f5c2-75e8-5b7e-6fe9-9c04ebc896ee",
+        permanent: false, // 307 temporary redirect
+      },
+    ];
+  },
   async headers() {
     return [
       {
