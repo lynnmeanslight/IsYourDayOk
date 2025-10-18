@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface MeditationProps {
   contracts: any;
@@ -31,6 +31,23 @@ export function Meditation({ contracts }: MeditationProps) {
     checkMeditationEligibility();
   }, [contracts]);
 
+  const handleComplete = useCallback(async () => {
+    setIsActive(false);
+    setLoading(true);
+
+    try {
+      await contracts.completeMeditation(60); // 60 seconds
+      setSuccess(true);
+      setCanStart(false);
+      
+      setTimeout(() => setSuccess(false), 5000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to complete meditation');
+    } finally {
+      setLoading(false);
+    }
+  }, [contracts]);
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
@@ -45,17 +62,24 @@ export function Meditation({ contracts }: MeditationProps) {
           if (newTime === 15) speak('15 seconds left. Almost there.');
           if (newTime === 10) speak('10');
           if (newTime < 10 && newTime > 0) speak(newTime.toString());
-          if (newTime === 0) speak('Meditation complete. Well done!');
+          if (newTime === 0) {
+            speak('Meditation complete. Well done!');
+          }
           
           return newTime;
         });
       }, 1000);
-    } else if (timeLeft === 0 && isActive) {
-      handleComplete();
     }
 
     return () => clearInterval(interval);
   }, [isActive, timeLeft]);
+
+  // Handle completion when timer reaches 0
+  useEffect(() => {
+    if (timeLeft === 0 && isActive) {
+      handleComplete();
+    }
+  }, [timeLeft, isActive, handleComplete]);
 
   const speak = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -90,23 +114,6 @@ export function Meditation({ contracts }: MeditationProps) {
     handleStop();
     setTimeLeft(60);
     setError('Meditation session cancelled. You can start again.');
-  };
-
-  const handleComplete = async () => {
-    setIsActive(false);
-    setLoading(true);
-
-    try {
-      await contracts.completeMeditation(60); // 60 seconds
-      setSuccess(true);
-      setCanStart(false);
-      
-      setTimeout(() => setSuccess(false), 5000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to complete meditation');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const formatTime = (seconds: number) => {
