@@ -1,23 +1,35 @@
 import { createConfig, http, WagmiProvider } from "wagmi";
-import { base, baseSepolia, optimism } from "wagmi/chains";
-import { baseAccount } from "wagmi/connectors";
+import { base, optimism } from "wagmi/chains";
+import { baseAccount, injected, coinbaseWallet } from "wagmi/connectors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
-import { METADATA } from "../../lib/utils";
 
 export const config = createConfig({
-  chains: [base, baseSepolia, optimism],
+  chains: [base, optimism],
   transports: {
     [base.id]: http(),
-    [baseSepolia.id]: http(),
     [optimism.id]: http(),
   },
   connectors: [
-    farcasterMiniApp(), 
+    // Farcaster MiniApp (for Farcaster users)
+    farcasterMiniApp(),
+
+    // Injected connector (for MetaMask, Rabby, etc.)
+    injected({
+      target: "metaMask",
+    }),
+
+    // Coinbase Wallet
+    coinbaseWallet({
+      appName: "IsYourDayOk",
+      preference: "all", // tries both extension and web/mobile SDK
+    }),
+
+    // Base Account (Smart Wallet)
     baseAccount({
-      appName: METADATA.name,
-      appLogoUrl: METADATA.iconImageUrl,
-    })
+      appName: "IsYourDayOk",
+      appLogoUrl: "/icons/IsYourDayOkfinal.png",
+    }),
   ],
 });
 

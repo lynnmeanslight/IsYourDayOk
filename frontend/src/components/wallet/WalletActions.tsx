@@ -47,11 +47,12 @@ const renderError = (error: Error | null): React.ReactElement | null => {
 };
 
 export function WalletConnect() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector } = useAccount();
   const { disconnect } = useDisconnect();
   const chainId = useChainId();
-  const { connect } = useConnect();
+  const { connectors, connect } = useConnect();
   const [baseSignedIn, setBaseSignedIn] = useState(false);
+  const [showConnectors, setShowConnectors] = useState(false);
 
   const handleBaseSignIn = async () => {
     try {
@@ -62,35 +63,94 @@ export function WalletConnect() {
     }
   };
 
+  const getConnectorIcon = (connectorId: string) => {
+    if (connectorId.includes('metaMask') || connectorId.includes('injected')) {
+      return '🦊';
+    }
+    if (connectorId.includes('coinbase')) {
+      return '🔵';
+    }
+    if (connectorId.includes('farcaster')) {
+      return '💜';
+    }
+    if (connectorId.includes('base')) {
+      return '🔷';
+    }
+    return '👛';
+  };
+
+  const getConnectorName = (connectorName: string, connectorId: string) => {
+    if (connectorId.includes('injected')) {
+      return 'MetaMask / Browser Wallet';
+    }
+    return connectorName;
+  };
+
   return (
     <>
-      <div className="mb-4">
-        <Button
-          onClick={() =>
-            isConnected
-              ? disconnect()
-              : connect({ connector: config.connectors[0] })
-          }
-          className="w-full"
-        >
-          {isConnected ? "Disconnect" : "Connect"}
-        </Button>
-      </div>
-
-      {/* Base Account Sign In Button */}
-      <div className="mb-4">
-        <SignInWithBaseButton 
-          align="center"
-          variant="solid"
-          colorScheme="light"
-          onClick={handleBaseSignIn}
-        />
-        {baseSignedIn && (
-          <div className="mt-2 text-center text-sm text-green-600">
-            ✅ Connected to Base Account
+      {!isConnected ? (
+        <>
+          <div className="mb-4">
+            <Button
+              onClick={() => setShowConnectors(!showConnectors)}
+              className="w-full"
+            >
+              {showConnectors ? "Hide Options" : "Connect Wallet"}
+            </Button>
           </div>
-        )}
-      </div>
+
+          {showConnectors && (
+            <div className="mb-4 p-4 bg-white border border-border rounded-xl">
+              <h3 className="font-semibold mb-3 text-foreground">Choose a Wallet</h3>
+              <div className="space-y-2">
+                {connectors.map((conn) => (
+                  <button
+                    key={conn.uid}
+                    onClick={() => {
+                      connect({ connector: conn });
+                      setShowConnectors(false);
+                    }}
+                    disabled={!conn.ready}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left bg-gray-50 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span className="text-2xl">{getConnectorIcon(conn.id)}</span>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{getConnectorName(conn.name, conn.id)}</p>
+                      {!conn.ready && (
+                        <p className="text-xs text-gray-500">Not available</p>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Base Account Sign In Button */}
+          <div className="mb-4">
+            <SignInWithBaseButton 
+              align="center"
+              variant="solid"
+              colorScheme="light"
+              onClick={handleBaseSignIn}
+            />
+            {baseSignedIn && (
+              <div className="mt-2 text-center text-sm text-green-600">
+                ✅ Connected to Base Account
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="mb-4">
+          <Button
+            onClick={() => disconnect()}
+            className="w-full bg-red-500 hover:bg-red-600"
+          >
+            Disconnect
+          </Button>
+        </div>
+      )}
 
       {isConnected && address && chainId && (
         <div className="mt-4 p-4 bg-white border border-border rounded-xl">

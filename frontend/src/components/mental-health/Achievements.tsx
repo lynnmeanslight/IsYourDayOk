@@ -178,7 +178,7 @@ export function Achievements({ contracts, onMintClick }: AchievementsProps) {
                 return (
                   <div
                     key={achievement.id}
-                    className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-400 rounded-2xl p-4 hover:scale-105 transition-transform"
+                    className="bg-blue-50 border-2 border-blue-400 rounded-2xl p-4 hover:scale-105 transition-transform"
                   >
                     <div className="text-center mb-3 flex items-center justify-center">
                       <div className="w-20 h-20">

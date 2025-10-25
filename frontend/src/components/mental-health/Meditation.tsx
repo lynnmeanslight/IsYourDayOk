@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useAccount, useSwitchChain } from 'wagmi';
+import { base } from 'wagmi/chains';
 
 interface MeditationProps {
   contracts: any;
@@ -16,6 +18,8 @@ export function Meditation({ contracts }: MeditationProps) {
   const [canStart, setCanStart] = useState(true);
   const [checkingEligibility, setCheckingEligibility] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { chain } = useAccount();
+  const { switchChainAsync } = useSwitchChain();
 
   useEffect(() => {
     async function checkMeditationEligibility() {
@@ -41,11 +45,11 @@ export function Meditation({ contracts }: MeditationProps) {
         setPreparationTime((prev) => {
           const newTime = prev - 1;
           
-          // Countdown announcements
-          if (newTime > 0) {
-            speak(newTime.toString());
+          // Only count down last 3 seconds
+          if (newTime === 3 || newTime === 2 || newTime === 1) {
+            speak(newTime.toString(), true);
           } else if (newTime === 0) {
-            speak('Begin meditation. Take a deep breath and relax.');
+            speak('Begin', true);
             setIsActive(true); // Start the actual meditation
           }
           
@@ -62,17 +66,28 @@ export function Meditation({ contracts }: MeditationProps) {
     setLoading(true);
 
     try {
+      // Check if on correct chain, switch if needed
+      if (chain?.id !== base.id) {
+        setError('Switching to Base...');
+        await switchChainAsync({ chainId: base.id });
+        setError('');
+      }
+
       await contracts.completeMeditation(60); // 60 seconds
       setSuccess(true);
       setCanStart(false);
       
       setTimeout(() => setSuccess(false), 5000);
     } catch (err: any) {
-      setError(err.message || 'Failed to complete meditation');
+      if (err.message?.includes('chain')) {
+        setError('Please switch to Base network in your wallet');
+      } else {
+        setError(err.message || 'Failed to complete meditation');
+      }
     } finally {
       setLoading(false);
     }
-  }, [contracts]);
+  }, [contracts, chain, switchChainAsync]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -82,14 +97,11 @@ export function Meditation({ contracts }: MeditationProps) {
         setTimeLeft((prev) => {
           const newTime = prev - 1;
           
-          // Voice announcements at key moments
-          if (newTime === 45) speak('45 seconds remaining');
-          if (newTime === 30) speak('30 seconds remaining. You\'re doing great.');
-          if (newTime === 15) speak('15 seconds left. Almost there.');
-          if (newTime === 10) speak('10');
-          if (newTime < 10 && newTime > 0) speak(newTime.toString());
+          // Minimal voice announcements - only at critical moments
+          if (newTime === 30) speak('Halfway there', false);
+          if (newTime === 10) speak('10 seconds', false);
           if (newTime === 0) {
-            speak('Meditation complete. Well done!');
+            speak('Complete', true);
           }
           
           return newTime;
@@ -107,13 +119,21 @@ export function Meditation({ contracts }: MeditationProps) {
     }
   }, [timeLeft, isActive, handleComplete]);
 
-  const speak = (text: string) => {
+  const speak = (text: string, priority: boolean = false) => {
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
-      utterance.volume = 1;
-      window.speechSynthesis.speak(utterance);
+      // Cancel any ongoing speech for priority messages or to prevent queue buildup
+      if (priority || window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+      
+      // Small delay to ensure cancel completes
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+      }, priority ? 100 : 50);
     }
   };
 
@@ -123,10 +143,19 @@ export function Meditation({ contracts }: MeditationProps) {
       return;
     }
 
+    // Cancel any ongoing speech first
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
     setPreparationTime(5); // Start 5-second preparation countdown
     setTimeLeft(60);
     setError('');
-    speak('Get ready to meditate. Starting in 5 seconds.');
+    
+    // Brief start message
+    setTimeout(() => {
+      speak('Get ready', true);
+    }, 200);
   };
 
   const handleStop = () => {
@@ -163,7 +192,7 @@ export function Meditation({ contracts }: MeditationProps) {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white rounded-2xl p-8 shadow-sm">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h2 className="text-3xl font-bold mb-2">Meditation</h2>
           <p className="text-gray-500">
             1 minute • Earn <span className="font-semibold text-blue-600">30 points</span>
@@ -171,6 +200,17 @@ export function Meditation({ contracts }: MeditationProps) {
           {!canStart && (
             <p className="text-sm text-green-600 mt-2">✓ Completed today</p>
           )}
+        </div>
+
+        {/* Quick Tips - Moved to top */}
+        <div className="mb-6 bg-blue-50 rounded-xl p-3 border border-blue-100">
+          <div className="flex items-start gap-2 text-xs text-gray-700">
+            <span className="text-sm flex-shrink-0">💡</span>
+            <div className="flex-1">
+              <span className="font-medium text-gray-900">Quick tips: </span>
+              Find a quiet place, relax your body, focus on your breathing
+            </div>
+          </div>
         </div>
 
         {/* Timer Display */}
@@ -202,7 +242,7 @@ export function Meditation({ contracts }: MeditationProps) {
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               {preparationTime > 0 ? (
                 <>
-                  <span className="text-7xl font-bold text-orange-500 animate-pulse">{preparationTime}</span>
+                  <span className="text-7xl font-bold text-blue-600 animate-pulse">{preparationTime}</span>
                   <span className="text-sm text-gray-500 mt-3">Get ready...</span>
                 </>
               ) : (
@@ -232,7 +272,7 @@ export function Meditation({ contracts }: MeditationProps) {
           {preparationTime > 0 && (
             <button
               onClick={handleReset}
-              className="w-full bg-orange-500 text-white rounded-2xl px-6 py-5 font-semibold text-lg hover:bg-orange-600 transition-all shadow-lg"
+              className="w-full bg-gray-600 text-white rounded-2xl px-6 py-5 font-semibold text-lg hover:bg-gray-700 transition-all shadow-lg"
             >
               ✕ Cancel Preparation
             </button>
@@ -294,21 +334,6 @@ export function Meditation({ contracts }: MeditationProps) {
             </p>
           </div>
         )}
-
-        {/* Simple Tips */}
-        <details className="mt-6 group">
-          <summary className="cursor-pointer text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center gap-2">
-            <span>💡</span>
-            <span>Meditation tips</span>
-            <span className="ml-auto group-open:rotate-180 transition-transform">▼</span>
-          </summary>
-          <ul className="mt-3 text-sm text-gray-600 space-y-2 pl-6">
-            <li>• Find a quiet place</li>
-            <li>• Close your eyes</li>
-            <li>• Focus on breathing</li>
-            <li>• Listen to voice guidance</li>
-          </ul>
-        </details>
       </div>
     </div>
   );

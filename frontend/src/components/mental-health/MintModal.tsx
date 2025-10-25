@@ -22,6 +22,11 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
       return;
     }
 
+    if (!contracts.address) {
+      setError('Please connect your wallet');
+      return;
+    }
+
     setLoading(true);
     setError('');
     setStep('minting');
@@ -29,28 +34,35 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
     try {
       // Step 1: Create achievement record with improvement rating
       const newAchievement = await contracts.createAchievement(
-        achievement.id,
-        achievement.days,
+        achievement.type,
+        achievement.target,
         improvementRating
       );
 
-      // Step 2: Mint NFT (this would call the actual NFT contract)
-      // For now, we'll simulate with a mock transaction
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate blockchain tx
-      
-      const mockTokenId = `0x${Math.random().toString(16).slice(2)}`;
-      const mockTxHash = `0x${Math.random().toString(16).slice(2)}`;
-      
-      // Step 3: Update achievement with mint data
-      await contracts.updateAchievementMint(
-        newAchievement.id,
-        mockTokenId,
-        '0xYourNFTContractAddress', // Replace with actual NFT contract
-        mockTxHash
-      );
+      // Step 2: Call server-side API to mint NFT on blockchain
+      const mintResponse = await fetch('/api/mint-nft', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          achievementId: newAchievement.id,
+          userAddress: contracts.address,
+          achievementType: achievement.type,
+          improvementRating,
+        }),
+      });
+
+      if (!mintResponse.ok) {
+        const errorData = await mintResponse.json();
+        throw new Error(errorData.error || 'Failed to mint NFT');
+      }
+
+      const mintData = await mintResponse.json();
 
       setStep('success');
     } catch (err: any) {
+      console.error('Minting error:', err);
       setError(err.message || 'Failed to mint NFT');
       setStep('rating');
     } finally {
@@ -175,17 +187,14 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
             <p className="text-muted-foreground mb-4">
               Your {achievement.title} NFT has been successfully minted!
             </p>
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-6">
-              <p className="text-sm text-green-900">
-                <strong>Improvement Rating:</strong> {improvementRating}/100
-              </p>
-              <p className="text-xs text-green-700 mt-1">
-                {getRatingLabel(improvementRating)}
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6">
+              <p className="text-sm text-blue-600 font-medium">
+                NFT successfully minted to your wallet!
               </p>
             </div>
             <button
               onClick={onClose}
-              className="w-full bg-primary text-white rounded-lg px-6 py-3 font-medium hover:opacity-90 transition-opacity"
+              className="w-full bg-blue-600 text-white rounded-lg px-6 py-3 font-medium hover:bg-blue-700 transition-colors"
             >
               View My Achievements
             </button>

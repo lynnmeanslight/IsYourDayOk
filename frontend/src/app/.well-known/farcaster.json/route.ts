@@ -39,10 +39,10 @@ export async function GET() {
       requiredChains: ["eip155:8453", "eip155:8453", "eip155:10"],
       canonicalDomain: "is-your-day-ok.vercel.app",
       noindex: false,
-      tags: ["base", "baseapp", "miniapp", "demo", "basepay"],
+      tags: ["mental-health", "wellness", "mindfulness", "meditation", "journaling", "mood-tracker", "nft", "achievements", "base", "baseapp", "miniapp"],
     },
     baseBuilder: {
-      allowedAddresses: ["0x8342A48694A74044116F330db5050a267b28dD85"],
+      allowedAddresses: ["0x76967Ce1457D65703445FbE024Dd487A151ad993"],
     },
   };
 

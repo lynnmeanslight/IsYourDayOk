@@ -6,7 +6,7 @@ import { config } from '~/components/providers/WagmiProvider';
 import { userAPI, journalAPI, moodAPI, meditationAPI, dailyActivityAPI, nftAPI } from './api';
 import { IsYourDayOkPointsABI } from './abis/IsYourDayOkPoints';
 import { IsYourDayOkNFTABI } from './abis/IsYourDayOkNFT';
-import { baseSepolia } from 'wagmi/chains';
+import { base } from 'wagmi/chains';
 import type { Address } from 'viem';
 
 // Contract addresses from deployments
@@ -87,7 +87,7 @@ export function useContracts(farcasterUser?: FarcasterUser) {
           abi: IsYourDayOkPointsABI,
           functionName: 'getUserData',
           args: [address],
-          chainId: baseSepolia.id,
+          chainId: base.id,
         });
 
         if (Array.isArray(data) && data.length === 5) {
@@ -134,7 +134,7 @@ export function useContracts(farcasterUser?: FarcasterUser) {
         abi: IsYourDayOkPointsABI,
         functionName: 'getUserData',
         args: [address],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
 
       if (Array.isArray(data) && data.length === 5) {
@@ -182,7 +182,7 @@ export function useContracts(farcasterUser?: FarcasterUser) {
         abi: IsYourDayOkPointsABI,
         functionName: 'logMood',
         args: [],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
 
       await waitForTransactionReceipt(config, { hash });
@@ -216,7 +216,7 @@ export function useContracts(farcasterUser?: FarcasterUser) {
         abi: IsYourDayOkPointsABI,
         functionName: 'submitJournal',
         args: [],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
 
       await waitForTransactionReceipt(config, { hash });
@@ -253,7 +253,7 @@ export function useContracts(farcasterUser?: FarcasterUser) {
         abi: IsYourDayOkPointsABI,
         functionName: 'completeMeditation',
         args: [],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
 
       await waitForTransactionReceipt(config, { hash });
@@ -282,7 +282,7 @@ export function useContracts(farcasterUser?: FarcasterUser) {
         abi: IsYourDayOkPointsABI,
         functionName: 'canMeditateToday',
         args: [address],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
 
       return canMeditate as boolean;
@@ -305,7 +305,7 @@ export function useContracts(farcasterUser?: FarcasterUser) {
     }
   };
 
-  // Update achievement with mint info
+  // Update achievement with mint info - now handled by mint API
   const updateAchievementMint = async (
     achievementId: string,
     tokenId: string,
@@ -325,6 +325,7 @@ export function useContracts(farcasterUser?: FarcasterUser) {
     isConnected,
     userData,
     dbUser,
+    farcasterUser,
     loading,
     error,
     logMood,

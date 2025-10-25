@@ -12,6 +12,11 @@ export function Dashboard({ contracts }: DashboardProps) {
   const [dailyActivity, setDailyActivity] = useState<any>(null);
   const [recentMoods, setRecentMoods] = useState<any[]>([]);
   const [loadingActivity, setLoadingActivity] = useState(true);
+  const [stats, setStats] = useState({
+    totalPoints: 0,
+    currentStreak: 0,
+    activitiesCompleted: 0,
+  });
 
   const getTodayDate = () => new Date().toISOString().split('T')[0];
 
@@ -26,6 +31,34 @@ export function Dashboard({ contracts }: DashboardProps) {
         ]);
         setDailyActivity(activity);
         setRecentMoods(moods.slice(0, 5));
+
+        // Calculate stats - prioritize blockchain data
+        const points = userData?.totalPoints 
+          ? Number(userData.totalPoints) 
+          : (dbUser?.points || 0);
+
+        const journalStreak = userData?.journalStreak 
+          ? Number(userData.journalStreak) 
+          : (dbUser?.journalStreak || 0);
+
+        const meditationStreak = userData?.meditationStreak 
+          ? Number(userData.meditationStreak) 
+          : (dbUser?.meditationStreak || 0);
+
+        // Current streak is the max of journal and meditation streaks
+        const currentStreak = Math.max(journalStreak, meditationStreak);
+
+        // Count today's completed activities
+        let activitiesCompleted = 0;
+        if (activity?.moodLogDone) activitiesCompleted++;
+        if (activity?.journalDone) activitiesCompleted++;
+        if (activity?.meditationDone) activitiesCompleted++;
+
+        setStats({
+          totalPoints: points,
+          currentStreak,
+          activitiesCompleted,
+        });
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -34,7 +67,7 @@ export function Dashboard({ contracts }: DashboardProps) {
     }
 
     fetchData();
-  }, [dbUser]);
+  }, [dbUser, userData]);
 
   if (loading || loadingActivity) {
     return (
@@ -45,40 +78,35 @@ export function Dashboard({ contracts }: DashboardProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-            {/* Hero Section */}
-      <div className="bg-blue-600 text-white rounded-2xl p-8 mb-6 shadow-lg">
-        <h2 className="text-3xl font-bold mb-2">Welcome back! 👋</h2>
-        <p className="text-blue-50">How are you feeling today?</p>
+    <div className="space-y-4">
+      {/* Hero Section - Mobile Optimized */}
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-3xl p-5 shadow-sm">
+        <h2 className="text-xl font-bold mb-1">Is Your Day Ok?</h2>
+        <p className="text-white/90 text-sm">Track your mental wellness journey</p>
       </div>
 
-      {/* Stats Grid - Simplified */}
-            {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      {/* Stats Grid - Mobile Vertical Stack */}
+      <div className="space-y-3">
         <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-blue-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Total Points</span>
-            <span className="text-2xl">�</span>
           </div>
-          <div className="text-4xl font-bold text-blue-600">{dbUser?.points || 0}</div>
+          <div className="text-4xl font-bold text-blue-600">{stats.totalPoints}</div>
         </div>
 
         <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-blue-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Current Streak</span>
-            <span className="text-2xl">�</span>
           </div>
-          <div className="text-4xl font-bold text-blue-600">{dbUser?.currentStreak || 0}</div>
+          <div className="text-4xl font-bold text-blue-600">{stats.currentStreak}</div>
           <div className="text-xs text-gray-500 mt-1">days</div>
         </div>
 
         <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-blue-100">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Activities</span>
-            <span className="text-2xl">✅</span>
+            <span className="text-sm text-gray-600">Today's Activities</span>
           </div>
-          <div className="text-4xl font-bold text-blue-600">{dailyActivity?.activities || 0}</div>
+          <div className="text-4xl font-bold text-blue-600">{stats.activitiesCompleted}/3</div>
           <div className="text-xs text-gray-500 mt-1">completed</div>
         </div>
       </div>
@@ -87,8 +115,8 @@ export function Dashboard({ contracts }: DashboardProps) {
       {recentMoods.length > 0 && (
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
-            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-              <img src="/emojis/calm.png" alt="Mood" className="w-full h-full object-contain drop-shadow-sm" />
+            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-1.5 shadow-sm">
+              <img src="/emojis/calm.png" alt="Mood" className="w-full h-full object-contain" />
             </div>
             <span>Recent Moods</span>
           </h3>
@@ -96,18 +124,18 @@ export function Dashboard({ contracts }: DashboardProps) {
             {recentMoods.map((mood) => (
               <div
                 key={mood.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-between p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg hover:from-gray-100 hover:to-gray-150 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0 bg-white rounded-lg p-1.5">
-                    {mood.mood === 'great' && <img src="/emojis/happy.png" alt="Great" className="w-full h-full object-contain drop-shadow-sm" />}
-                    {mood.mood === 'good' && <img src="/emojis/calm.png" alt="Good" className="w-full h-full object-contain drop-shadow-sm" />}
-                    {mood.mood === 'okay' && <img src="/emojis/neutral.png" alt="Okay" className="w-full h-full object-contain drop-shadow-sm" />}
-                    {mood.mood === 'not-great' && <img src="/emojis/down.png" alt="Not Great" className="w-full h-full object-contain drop-shadow-sm" />}
-                    {mood.mood === 'bad' && <img src="/emojis/sad.png" alt="Bad" className="w-full h-full object-contain drop-shadow-sm" />}
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0 bg-white rounded-xl shadow-sm p-2">
+                    {mood.mood === 'happy' && <img src="/emojis/happy.png" alt="Happy" className="w-full h-full object-contain" />}
+                    {mood.mood === 'calm' && <img src="/emojis/calm.png" alt="Calm" className="w-full h-full object-contain" />}
+                    {mood.mood === 'neutral' && <img src="/emojis/neutral.png" alt="Neutral" className="w-full h-full object-contain" />}
+                    {mood.mood === 'not-great' && <img src="/emojis/down.png" alt="Not Great" className="w-full h-full object-contain" />}
+                    {mood.mood === 'sad' && <img src="/emojis/sad.png" alt="Sad" className="w-full h-full object-contain" />}
                   </div>
                   <div>
-                    <p className="font-medium capitalize">{mood.mood}</p>
+                    <p className="font-medium capitalize">{mood.mood.replace('-', ' ')}</p>
                     <p className="text-sm text-gray-500">
                       {new Date(mood.createdAt).toLocaleDateString()}
                     </p>
@@ -138,11 +166,11 @@ export function Dashboard({ contracts }: DashboardProps) {
         <div className="space-y-3">
           {/* Mood Log */}
           <div className={`flex items-center justify-between p-4 rounded-lg ${
-            dailyActivity?.moodLogDone ? 'bg-green-50' : 'bg-gray-50'
+            dailyActivity?.moodLogDone ? 'bg-blue-50 border border-blue-200' : 'bg-gradient-to-br from-gray-50 to-gray-100'
           }`}>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-                <img src="/emojis/calm.png" alt="Mood" className="w-full h-full object-contain drop-shadow-sm" />
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 bg-white rounded-xl shadow-sm p-1.5">
+                <img src="/emojis/calm.png" alt="Mood" className="w-full h-full object-contain" />
               </div>
               <div>
                 <p className="font-medium">Log Mood</p>
@@ -160,7 +188,7 @@ export function Dashboard({ contracts }: DashboardProps) {
 
           {/* Journal */}
           <div className={`flex items-center justify-between p-4 rounded-lg ${
-            dailyActivity?.journalDone ? 'bg-green-50' : 'bg-gray-50'
+            dailyActivity?.journalDone ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
           }`}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
@@ -182,7 +210,7 @@ export function Dashboard({ contracts }: DashboardProps) {
 
           {/* Meditation */}
           <div className={`flex items-center justify-between p-4 rounded-lg ${
-            dailyActivity?.meditationDone ? 'bg-green-50' : 'bg-gray-50'
+            dailyActivity?.meditationDone ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
           }`}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">

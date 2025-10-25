@@ -2,12 +2,12 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export const METADATA = {
-  name: "Base Mini App Demo",
-  description: "A demo mini app for testing capabilities on Base",
-  bannerImageUrl: 'https://i.imgur.com/2bsV8mV.png',
-  iconImageUrl: 'https://i.imgur.com/brcnijg.png',
-  homeUrl: process.env.NEXT_PUBLIC_URL ?? "https://frames-v2-demo-lilac.vercel.app",
-  splashBackgroundColor: "#FFFFFF"
+  name: "IsYourDayOk - Mental Health Tracker on Base",
+  description: "Track your mental health journey with daily mood logs, journaling, guided meditation, and earn achievement NFTs on Base blockchain. Join our supportive community and improve your wellbeing.",
+  bannerImageUrl: `${process.env.NEXT_PUBLIC_URL ?? "https://is-your-day-ok.vercel.app"}/icons/image.PNG`,
+  iconImageUrl: `${process.env.NEXT_PUBLIC_URL ?? "https://is-your-day-ok.vercel.app"}/icons/IsYourDayOkfinal.png`,
+  homeUrl: process.env.NEXT_PUBLIC_URL ?? "https://is-your-day-ok.vercel.app",
+  splashBackgroundColor: "#2563EB"
 }
 
 export function cn(...inputs: ClassValue[]) {

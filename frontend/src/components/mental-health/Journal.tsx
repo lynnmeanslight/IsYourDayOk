@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useAccount, useSwitchChain } from 'wagmi';
+import { base } from 'wagmi/chains';
 
 interface JournalProps {
   contracts: any;
@@ -11,6 +13,8 @@ export function Journal({ contracts }: JournalProps) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const { chain } = useAccount();
+  const { switchChainAsync } = useSwitchChain();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,13 +34,24 @@ export function Journal({ contracts }: JournalProps) {
     setSuccess(false);
 
     try {
+      // Check if on correct chain, switch if needed
+      if (chain?.id !== base.id) {
+        setError('Switching to Base...');
+        await switchChainAsync({ chainId: base.id });
+        setError(''); // Clear the switching message
+      }
+
       await contracts.submitJournal(content);
       setSuccess(true);
       setContent('');
       
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
-      setError(err.message || 'Failed to submit journal');
+      if (err.message?.includes('chain')) {
+        setError('Please switch to Base network in your wallet');
+      } else {
+        setError(err.message || 'Failed to submit journal');
+      }
     } finally {
       setLoading(false);
     }

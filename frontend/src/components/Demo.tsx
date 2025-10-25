@@ -354,14 +354,12 @@ export default function Demo() {
                     Connect your wallet to access all features
                   </p>
                 </div>
-                <WalletConnect />
               </div>
             ) : (
               <div>
                 {currentWalletPage === "list" ? (
                   <div className="space-y-4">
                     {/* Connection Status */}
-                    <WalletConnect />
                     
                     {/* Wallet Action Cells */}
                     <div className="space-y-2">
