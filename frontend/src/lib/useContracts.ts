@@ -10,8 +10,8 @@ import { base } from 'wagmi/chains';
 import type { Address } from 'viem';
 
 // Contract addresses from deployments
-const POINTS_CONTRACT_ADDRESS = '0x53D68885D3Bd841B9eD99306eCa07C7f43fDF557' as Address;
-const NFT_CONTRACT_ADDRESS = '0xbe12BEE2433AA6bE6e4f558DA9bCd44F6DD7B981' as Address;
+const POINTS_CONTRACT_ADDRESS = '0x364784cb19047B68066eEa63286AAd5EA49453C2' as Address;
+const NFT_CONTRACT_ADDRESS = '0xD7498664f74cF7437994C4E523C542761BA7d4a0' as Address;
 
 interface FarcasterUser {
   fid?: string;
