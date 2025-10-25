@@ -214,13 +214,17 @@ IsYourDayOk gamifies mental wellness through blockchain technology:
 - **Points System**: Off-chain database tracking (not tokenized)
 
 ### Sample Transactions
-- NFT Contract Deployment: [View on BaseScan]
-- NFT Achievements Minted: [View on BaseScan]
+- NFT Contract Deployment: [0xD7498664f74cF7437994C4E523C542761BA7d4a0](https://basescan.org/address/0xD7498664f74cF7437994C4E523C542761BA7d4a0)
+- Points Contract Deployment: [0x364784cb19047B68066eEa63286AAd5EA49453C2](https://basescan.org/address/0x364784cb19047B68066eEa63286AAd5EA49453C2)
+
+
+
+- Transaction on mainnet: [0xb0b523e088cc316a8cf5becbefdd3eef22bfff6ed232f522bd5c9339d4371ef7](https://basescan.org/tx/0xb0b523e088cc316a8cf5becbefdd3eef22bfff6ed232f522bd5c9339d4371ef7)
 - User Activities: Database records with achievement unlocks
 
-**Total Transactions**: [Number]  
+**Total Transactions**: 3+ on Base Mainnet  
 **Unique Users**: [Number]  
-**NFTs Minted**: [Number]  
+**NFTs Minted**: 1+ (verifiable onchain)  
 **Points Awarded**: [Number] (off-chain tracking)
 
 ---
