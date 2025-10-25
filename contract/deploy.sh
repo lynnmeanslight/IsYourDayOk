@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Default values
-NETWORK=${1:-base-sepolia}
+NETWORK=${1:-base-mainnet}
 RPC_URL=""
 CHAIN_ID=""
 
@@ -34,7 +34,7 @@ case $NETWORK in
     ;;
   *)
     echo -e "${RED}❌ Unknown network: $NETWORK${NC}"
-    echo "Supported networks: base-sepolia, base-mainnet, localhost"
+    echo "Supported networks: base-mainnet (default), base-sepolia, localhost"
     exit 1
     ;;
 esac
@@ -212,12 +212,9 @@ echo -e "${GREEN}✨ Happy deploying!${NC}"
 
 
 
-forge verify-contract 0x53D68885D3Bd841B9eD99306eCa07C7f43fDF557 \
-        src/IsYourDayOkPoints.sol:IsYourDayOkPoints \
-        --rpc-url $RPC_URL \  
+forge verify-contract 0xD7498664f74cF7437994C4E523C542761BA7d4a0 \
+        src/IsYourDayOkNFT.sol:IsYourDayOkNFT \
+        --chain-id $CHAIN_ID \
         --etherscan-api-key $ETHERSCAN_API_KEY
 
-forge verify-contract 0xbe12BEE2433AA6bE6e4f558DA9bCd44F6DD7B981 \
-        src/IsYourDayOkNFT.sol:IsYourDayOkNFT \
-        --rpc-url $RPC_URL \  
-        --etherscan-api-key $ETHERSCAN_API_KEY
+forge verify-contract 0x364784cb19047B68066eEa63286AAd5EA49453C2 src/IsYourDayOkPoints.sol:IsYourDayOkPoints --etherscan-api-key $ETHERSCAN_API_KEY

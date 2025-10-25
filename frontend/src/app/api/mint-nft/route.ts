@@ -5,8 +5,7 @@ import { base } from "viem/chains";
 import { IsYourDayOkNFTABI } from "~/lib/abis/IsYourDayOkNFT";
 import { prisma } from "~/lib/prisma";
 
-const NFT_CONTRACT_ADDRESS =
-  "0xbe12BEE2433AA6bE6e4f558DA9bCd44F6DD7B981" as const;
+const NFT_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_NFT_CONTRACT as `0x${string}`;
 
 // Achievement type enum mapping
 const ACHIEVEMENT_TYPE_MAP = {

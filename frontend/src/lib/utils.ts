@@ -3,9 +3,22 @@ import { twMerge } from "tailwind-merge"
 
 export const METADATA = {
   name: "IsYourDayOk",
+  tagline: "Check in. Reflect. Grow. Own Your Wellness Journey.",
   subtitle: "Your Daily Mental Wellness Companion on Base",
   description: "Track your mental health journey with daily mood logging, reflective journaling, and guided meditation. Earn achievement NFTs for maintaining streaks, connect with a supportive community, and build consistent wellness habits—all on Base blockchain.",
   longDescription: "IsYourDayOk is a comprehensive mental health tracking platform that helps you build lasting wellness habits through daily check-ins, journaling, and mindfulness practices. Earn points for each activity, unlock achievement NFTs when you hit milestones (7-day and 30-day streaks), and visualize your progress over time. Built on Base blockchain with Farcaster integration, your mental health data stays private while your achievements remain yours forever.",
+  marketingTaglines: {
+    primary: "Check in. Reflect. Grow. Own Your Wellness Journey.",
+    alternative: [
+      "Your mental health matters. Track it. Own it. Forever.",
+      "Building better days, one check-in at a time.",
+      "Mindfulness meets blockchain. Your wellness, your NFTs.",
+      "Turn consistency into achievement. Your streaks, your rewards.",
+      "Mental wellness that rewards you—on chain, for life.",
+      "Daily habits. Lifetime achievements. All yours on Base.",
+      "From mood tracking to milestone NFTs—wellness redefined."
+    ]
+  },
   features: [
     "Daily mood tracking with visual analytics",
     "Private journaling with streak rewards",
