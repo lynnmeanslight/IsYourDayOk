@@ -2,13 +2,13 @@ import { METADATA } from "../../../lib/utils";
 
 export async function GET() {
   const config = {
-    accountAssociation: {
-      header:
-        "eyJmaWQiOjg3NzAwMSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweEJDN2EzRTVEZDFFOWY3MjU4MDY1YzU1Y0EzNjNlNjJiZTRFNTYxYjAifQ",
-      payload: "eyJkb21haW4iOiJpcy15b3VyLWRheS1vay52ZXJjZWwuYXBwIn0",
-      signature:
-        "1g+j/kUVdOwJTuyVM5S2gX8EWzMjTHnbRRCMNiXhU6Qz3AWy85H7UrIBcA4FZ5m+YGkI1zzMMYPQa5jPPmbssRs=",
-    },
+    // accountAssociation: {
+    //   header:
+    //     "eyJmaWQiOjg3NzAwMSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweEJDN2EzRTVEZDFFOWY3MjU4MDY1YzU1Y0EzNjNlNjJiZTRFNTYxYjAifQ",
+    //   payload: "eyJkb21haW4iOiJpcy15b3VyLWRheS1vay52ZXJjZWwuYXBwIn0",
+    //   signature:
+    //     "1g+j/kUVdOwJTuyVM5S2gX8EWzMjTHnbRRCMNiXhU6Qz3AWy85H7UrIBcA4FZ5m+YGkI1zzMMYPQa5jPPmbssRs=",
+    // },
     frame: {
       version: "1",
       name: METADATA.name,
