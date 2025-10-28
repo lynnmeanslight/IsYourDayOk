@@ -34,7 +34,7 @@ export const METADATA = {
   ],
   bannerImageUrl: `${
     process.env.NEXT_PUBLIC_URL ?? "https://is-your-day-ok.vercel.app"
-  }/icons/image.PNG`,
+  }/icons/og_image.png`,
   iconImageUrl: `${
     process.env.NEXT_PUBLIC_URL ?? "https://is-your-day-ok.vercel.app"
   }/icons/IsYourDayOkfinal.png`,
