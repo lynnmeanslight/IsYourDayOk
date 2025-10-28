@@ -190,34 +190,56 @@ export function Meditation({ contracts }: MeditationProps) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-2xl p-8 shadow-sm">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold mb-2">Meditation</h2>
-          <p className="text-gray-500">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm">
+        {/* Header - Mobile optimized */}
+        <div className="text-center mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">Meditation</h2>
+          <p className="text-sm sm:text-base text-gray-500">
             1 minute • Earn <span className="font-semibold text-blue-600">30 points</span>
           </p>
           {!canStart && (
-            <p className="text-sm text-green-600 mt-2">✓ Completed today</p>
+            <p className="text-xs sm:text-sm text-green-600 mt-2">✓ Completed today</p>
           )}
         </div>
 
-        {/* Quick Tips - Moved to top */}
-        <div className="mb-6 bg-blue-50 rounded-xl p-3 border border-blue-100">
-          <div className="flex items-start gap-2 text-xs text-gray-700">
-            <span className="text-sm flex-shrink-0">💡</span>
-            <div className="flex-1">
+        {/* Quick Tips - Mobile optimized */}
+        <div className="mb-5 sm:mb-6 bg-blue-50 rounded-xl p-3 border border-blue-100">
+          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-700">
+            <span className="text-base sm:text-lg flex-shrink-0">💡</span>
+            <div className="flex-1 leading-relaxed">
               <span className="font-medium text-gray-900">Quick tips: </span>
               Find a quiet place, relax your body, focus on your breathing
             </div>
           </div>
         </div>
 
-        {/* Timer Display */}
-        <div className="text-center mb-8">
+        {/* Timer Display - Mobile responsive */}
+        <div className="text-center mb-6 sm:mb-8">
           <div className="relative inline-block">
-            {/* Progress Circle */}
-            <svg className="w-64 h-64 transform -rotate-90">
+            {/* Progress Circle - Responsive size */}
+            <svg className="w-56 h-56 sm:w-64 sm:h-64 transform -rotate-90">
+              <circle
+                cx="112"
+                cy="112"
+                r="104"
+                stroke="#f0f0f0"
+                strokeWidth="10"
+                fill="none"
+                className="sm:hidden"
+              />
+              <circle
+                cx="112"
+                cy="112"
+                r="104"
+                stroke="#3b82f6"
+                strokeWidth="10"
+                fill="none"
+                strokeDasharray={`${2 * Math.PI * 104}`}
+                strokeDashoffset={`${2 * Math.PI * 104 * (1 - progress / 100)}`}
+                strokeLinecap="round"
+                className="transition-all duration-1000 sm:hidden"
+              />
               <circle
                 cx="128"
                 cy="128"
@@ -225,6 +247,7 @@ export function Meditation({ contracts }: MeditationProps) {
                 stroke="#f0f0f0"
                 strokeWidth="12"
                 fill="none"
+                className="hidden sm:block"
               />
               <circle
                 cx="128"
@@ -236,20 +259,20 @@ export function Meditation({ contracts }: MeditationProps) {
                 strokeDasharray={`${2 * Math.PI * 120}`}
                 strokeDashoffset={`${2 * Math.PI * 120 * (1 - progress / 100)}`}
                 strokeLinecap="round"
-                className="transition-all duration-1000"
+                className="transition-all duration-1000 hidden sm:block"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               {preparationTime > 0 ? (
                 <>
-                  <span className="text-7xl font-bold text-blue-600 animate-pulse">{preparationTime}</span>
-                  <span className="text-sm text-gray-500 mt-3">Get ready...</span>
+                  <span className="text-5xl sm:text-7xl font-bold text-blue-600 animate-pulse">{preparationTime}</span>
+                  <span className="text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3">Get ready...</span>
                 </>
               ) : (
                 <>
-                  <span className="text-7xl font-bold text-blue-600">{formatTime(timeLeft)}</span>
+                  <span className="text-5xl sm:text-7xl font-bold text-blue-600">{formatTime(timeLeft)}</span>
                   {isActive && (
-                    <span className="text-sm text-gray-500 mt-3 animate-pulse">Breathe...</span>
+                    <span className="text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3 animate-pulse">Breathe...</span>
                   )}
                 </>
               )}
@@ -257,38 +280,47 @@ export function Meditation({ contracts }: MeditationProps) {
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="space-y-3">
+        {/* Controls - Mobile optimized */}
+        <div className="space-y-2.5 sm:space-y-3">
           {!isActive && !preparationTime && timeLeft === 60 && (
             <button
               onClick={handleStart}
               disabled={!canStart || loading}
-              className="w-full bg-blue-600 text-white rounded-2xl px-6 py-5 font-semibold text-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full bg-white text-blue-600 rounded-xl sm:rounded-2xl px-6 py-4 sm:py-5 font-semibold text-base sm:text-lg hover:bg-blue-600 hover:text-white active:bg-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl touch-manipulation min-h-[52px] sm:min-h-[60px] flex items-center justify-center gap-2"
             >
-              {!canStart ? '✓ Completed Today' : '🧘 Start Meditation'}
+              {!canStart ? (
+                <>✓ Completed Today</>
+              ) : (
+                <>
+                  <div className="w-10 h-10 sm:w-10 sm:h-10 bg-white rounded-lg p-1 flex items-center justify-center">
+                    <img src="/icons/meditation.png" alt="Meditation" className="w-full h-full object-contain" />
+                  </div>
+                  <span>Start Meditation</span>
+                </>
+              )}
             </button>
           )}
 
           {preparationTime > 0 && (
             <button
               onClick={handleReset}
-              className="w-full bg-gray-600 text-white rounded-2xl px-6 py-5 font-semibold text-lg hover:bg-gray-700 transition-all shadow-lg"
+              className="w-full bg-gray-600 text-white rounded-xl sm:rounded-2xl px-6 py-4 sm:py-5 font-semibold text-base sm:text-lg hover:bg-gray-700 active:bg-gray-800 transition-all shadow-lg touch-manipulation min-h-[52px] sm:min-h-[60px]"
             >
               ✕ Cancel Preparation
             </button>
           )}
 
           {isActive && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <button
                 onClick={handleStop}
-                className="w-full bg-gray-400 text-white rounded-xl px-6 py-4 font-semibold hover:bg-gray-500 transition-colors"
+                className="w-full bg-gray-400 text-white rounded-xl px-4 sm:px-6 py-3.5 sm:py-4 font-semibold text-sm sm:text-base hover:bg-gray-500 active:bg-gray-600 transition-colors touch-manipulation min-h-[50px]"
               >
                 ⏸ Pause
               </button>
               <button
                 onClick={handleReset}
-                className="w-full bg-gray-600 text-white rounded-xl px-6 py-4 font-semibold hover:bg-gray-700 transition-colors"
+                className="w-full bg-gray-600 text-white rounded-xl px-4 sm:px-6 py-3.5 sm:py-4 font-semibold text-sm sm:text-base hover:bg-gray-700 active:bg-gray-800 transition-colors touch-manipulation min-h-[50px]"
               >
                 ✕ Cancel
               </button>
@@ -296,16 +328,16 @@ export function Meditation({ contracts }: MeditationProps) {
           )}
 
           {!isActive && timeLeft < 60 && timeLeft > 0 && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <button
                 onClick={() => setIsActive(true)}
-                className="w-full bg-blue-600 text-white rounded-xl px-6 py-4 font-semibold hover:bg-blue-700 transition-colors"
+                className="w-full bg-blue-600 text-white rounded-xl px-4 sm:px-6 py-3.5 sm:py-4 font-semibold text-sm sm:text-base hover:bg-blue-700 active:bg-blue-800 transition-colors touch-manipulation min-h-[50px]"
               >
                 ▶ Resume
               </button>
               <button
                 onClick={handleReset}
-                className="w-full bg-gray-400 text-white rounded-xl px-6 py-4 font-semibold hover:bg-gray-500 transition-colors"
+                className="w-full bg-gray-400 text-white rounded-xl px-4 sm:px-6 py-3.5 sm:py-4 font-semibold text-sm sm:text-base hover:bg-gray-500 active:bg-gray-600 transition-colors touch-manipulation min-h-[50px]"
               >
                 ↺ Restart
               </button>
@@ -313,23 +345,29 @@ export function Meditation({ contracts }: MeditationProps) {
           )}
 
           {timeLeft === 0 && loading && (
-            <div className="w-full bg-blue-600 text-white rounded-xl px-6 py-4 font-semibold text-center">
-              Saving...
+            <div className="w-full bg-blue-600 text-white rounded-xl px-6 py-4 font-semibold text-center min-h-[52px] flex items-center justify-center">
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Saving...</span>
+              </span>
             </div>
           )}
         </div>
 
-        {/* Error Message */}
+        {/* Error Message - Mobile optimized */}
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-xl sm:rounded-2xl">
+            <p className="text-xs sm:text-sm text-red-600 text-center leading-relaxed">{error}</p>
           </div>
         )}
 
-        {/* Success Message */}
+        {/* Success Message - Mobile optimized */}
         {success && (
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
-            <p className="text-sm text-blue-600 font-medium">
+          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl sm:rounded-2xl">
+            <p className="text-xs sm:text-sm text-blue-600 font-medium text-center leading-relaxed">
               ✓ Meditation complete! +30 points & streak extended
             </p>
           </div>

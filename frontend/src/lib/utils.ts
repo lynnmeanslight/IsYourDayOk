@@ -39,7 +39,7 @@ export const METADATA = {
     process.env.NEXT_PUBLIC_URL ?? "https://is-your-day-ok.vercel.app"
   }/icons/IsYourDayOkfinal.png`,
   homeUrl: process.env.NEXT_PUBLIC_URL ?? "https://is-your-day-ok.vercel.app",
-  splashBackgroundColor: "#2563EB",
+  splashBackgroundColor: "#ffffff",
 };
 
 export function cn(...inputs: ClassValue[]) {

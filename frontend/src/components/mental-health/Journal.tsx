@@ -61,71 +61,90 @@ export function Journal({ contracts }: JournalProps) {
   const charCount = content.length;
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="bg-white rounded-2xl p-8 shadow-sm">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-2">Daily Journal</h2>
-          <p className="text-gray-500">
-            Express yourself and earn <span className="font-semibold text-blue-600">20 points</span>
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-sm">
+        {/* Header - Optimized for mobile */}
+        <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2">
+            Daily Journal
+          </h2>
+          <p className="text-sm sm:text-base text-gray-500">
+            Express yourself and earn{' '}
+            <span className="font-semibold text-blue-600">20 points</span>
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Journal Textarea */}
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 lg:space-y-6">
+          {/* Journal Textarea - Mobile optimized */}
           <div>
             <textarea
               id="journal-content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="How was your day? What are you grateful for?"
-              rows={12}
-              className="w-full bg-gray-50 border-0 rounded-2xl px-6 py-4 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none resize-none text-lg"
+              rows={10}
+              className="w-full bg-gray-50 border-0 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-6 sm:py-4 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none resize-none text-base sm:text-lg leading-relaxed touch-manipulation"
+              style={{ minHeight: '200px' }}
             />
-            <div className="flex justify-between mt-2 px-2 text-sm text-gray-400">
-              <span>{wordCount} words</span>
-              <span>{charCount} characters</span>
+            <div className="flex justify-between mt-2 px-2 text-xs sm:text-sm text-gray-400">
+              <span>{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
+              <span>{charCount} {charCount === 1 ? 'character' : 'characters'}</span>
             </div>
           </div>
 
-          {/* Error Message */}
+          {/* Error Message - Mobile optimized */}
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-center">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="p-3 sm:p-4 bg-red-50 border border-red-200 rounded-xl sm:rounded-2xl">
+              <p className="text-xs sm:text-sm text-red-600 text-center leading-relaxed">
+                {error}
+              </p>
             </div>
           )}
 
-          {/* Success Message */}
+          {/* Success Message - Mobile optimized */}
           {success && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
-              <p className="text-sm text-blue-600 font-medium">
+            <div className="p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl sm:rounded-2xl">
+              <p className="text-xs sm:text-sm text-blue-600 font-medium text-center leading-relaxed">
                 ✓ Journal saved! +20 points & streak extended
               </p>
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* Submit Button - Mobile optimized with larger touch target */}
           <button
             type="submit"
             disabled={loading || !content.trim()}
-            className="w-full bg-blue-600 text-white rounded-2xl px-6 py-4 font-semibold text-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+            className="w-full bg-blue-600 text-white rounded-xl sm:rounded-2xl px-6 py-4 sm:py-5 font-semibold text-base sm:text-lg hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl touch-manipulation min-h-[48px] sm:min-h-[56px]"
           >
-            {loading ? 'Saving...' : 'Save Journal Entry'}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Saving...</span>
+              </span>
+            ) : (
+              'Save Journal Entry'
+            )}
           </button>
         </form>
 
-        {/* Writing Prompts - Collapsible */}
-        <details className="mt-6 group">
-          <summary className="cursor-pointer text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center gap-2">
-            <span>💡</span>
-            <span>Need inspiration? Click for writing prompts</span>
-            <span className="ml-auto group-open:rotate-180 transition-transform">▼</span>
+        {/* Writing Prompts - Mobile optimized */}
+        <details className="mt-4 sm:mt-5 lg:mt-6 group">
+          <summary className="cursor-pointer text-sm sm:text-base font-medium text-gray-600 hover:text-gray-900 active:text-gray-900 flex items-center gap-2 p-2 -mx-2 rounded-lg hover:bg-gray-50 touch-manipulation min-h-[44px]">
+            <span className="text-lg">💡</span>
+            <span className="flex-1">Need inspiration? Tap for writing prompts</span>
+            <span className="ml-auto group-open:rotate-180 transition-transform text-xs sm:text-sm">
+              ▼
+            </span>
           </summary>
-          <ul className="mt-3 text-sm text-gray-600 space-y-2 pl-6">
-            <li>• What made you smile today?</li>
-            <li>• What challenge did you overcome?</li>
-            <li>• What are you grateful for right now?</li>
-            <li>• How did you take care of yourself today?</li>
-            <li>• What's one thing you learned about yourself?</li>
+          <ul className="mt-3 text-sm sm:text-base text-gray-600 space-y-2.5 sm:space-y-3 pl-4 sm:pl-6">
+            <li className="leading-relaxed">• What made you smile today?</li>
+            <li className="leading-relaxed">• What challenge did you overcome?</li>
+            <li className="leading-relaxed">• What are you grateful for right now?</li>
+            <li className="leading-relaxed">• How did you take care of yourself today?</li>
+            <li className="leading-relaxed">• What's one thing you learned about yourself?</li>
           </ul>
         </details>
       </div>

@@ -98,51 +98,51 @@ export function ChatRoom({ contracts }: ChatRoomProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="border border-border rounded-lg bg-white overflow-hidden">
-        {/* Header */}
-        <div className="p-4 border-b border-border bg-blue-50">
+    <div className="max-w-4xl mx-auto px-2 sm:px-4">
+      <div className="border border-border rounded-xl sm:rounded-2xl bg-white overflow-hidden shadow-sm">
+        {/* Header - Mobile optimized */}
+        <div className="p-3 sm:p-4 border-b border-border bg-blue-50">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold">Community Updates</h2>
-              <p className="text-sm text-muted-foreground">
-                Admin-maintained chat room • Read-only
+            <div className="flex-1 min-w-0">
+              <h2 className="text-base sm:text-xl font-bold truncate">Community Updates</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                Admin-maintained • Read-only
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm flex-shrink-0 ml-2">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               <span className="text-muted-foreground">Live</span>
             </div>
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="h-[500px] overflow-y-auto p-4 space-y-3">
+        {/* Messages - Mobile optimized height */}
+        <div className="h-[400px] sm:h-[500px] overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-3">
           {messages.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="flex items-center justify-center mb-4">
-                <img src="/icons/channel.png" alt="Chat" className="w-20 h-20 object-contain opacity-50" />
+            <div className="text-center py-8 sm:py-12 px-4">
+              <div className="flex items-center justify-center mb-3 sm:mb-4">
+                <img src="/icons/channel.png" alt="Chat" className="w-16 h-16 sm:w-20 sm:h-20 object-contain opacity-50" />
               </div>
-              <p className="text-muted-foreground">No messages yet</p>
+              <p className="text-sm sm:text-base text-muted-foreground">No messages yet</p>
             </div>
           ) : (
             messages.map((message) => (
               <div
                 key={message.id}
-                className={`border rounded-lg p-4 ${getMessageColor(message.type)}`}
+                className={`border rounded-lg sm:rounded-xl p-3 sm:p-4 ${getMessageColor(message.type)}`}
               >
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl">{getMessageIcon(message.type)}</span>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <span className="text-xl sm:text-2xl flex-shrink-0">{getMessageIcon(message.type)}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium capitalize">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                      <span className="font-medium capitalize text-xs sm:text-sm truncate">
                         {message.type === 'admin' ? 'Admin' : message.type === 'system' ? 'System' : message.type}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">
                         {formatTime(message.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm whitespace-pre-wrap break-words">
+                    <p className="text-xs sm:text-sm whitespace-pre-wrap break-words leading-relaxed">
                       {message.content}
                     </p>
                   </div>
@@ -153,40 +153,40 @@ export function ChatRoom({ contracts }: ChatRoomProps) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Info Footer */}
-        <div className="p-4 border-t border-border bg-gray-50">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        {/* Info Footer - Mobile optimized */}
+        <div className="p-3 sm:p-4 border-t border-border bg-gray-50">
+          <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground">
+            <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
-            <p>
+            <p className="leading-relaxed">
               This chat room is maintained by admins. Automatic posts include user moods and achievements.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Message Types Legend */}
-      <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="flex items-center gap-2 text-sm">
-          <span>😊</span>
-          <span className="text-muted-foreground">Mood Update</span>
+      {/* Message Types Legend - Mobile grid optimized */}
+      <div className="mt-4 sm:mt-6 grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3 px-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm bg-white p-2 rounded-lg">
+          <span className="text-base sm:text-lg">😊</span>
+          <span className="text-muted-foreground truncate">Mood</span>
         </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span>🏆</span>
-          <span className="text-muted-foreground">Achievement</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm bg-white p-2 rounded-lg">
+          <span className="text-base sm:text-lg">🏆</span>
+          <span className="text-muted-foreground truncate">Achievement</span>
         </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span>🎉</span>
-          <span className="text-muted-foreground">Milestone</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm bg-white p-2 rounded-lg">
+          <span className="text-base sm:text-lg">🎉</span>
+          <span className="text-muted-foreground truncate">Milestone</span>
         </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span>👨‍💼</span>
-          <span className="text-muted-foreground">Admin Post</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm bg-white p-2 rounded-lg">
+          <span className="text-base sm:text-lg">👨‍💼</span>
+          <span className="text-muted-foreground truncate">Admin</span>
         </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span>🤖</span>
-          <span className="text-muted-foreground">System</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm bg-white p-2 rounded-lg col-span-2 sm:col-span-1">
+          <span className="text-base sm:text-lg">🤖</span>
+          <span className="text-muted-foreground truncate">System</span>
         </div>
       </div>
     </div>
