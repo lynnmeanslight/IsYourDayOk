@@ -19,9 +19,9 @@ export async function GET() {
       splashBackgroundColor: METADATA.splashBackgroundColor,
       description: METADATA.description,
       ogTitle: METADATA.name,
-      ogDescription: METADATA.description,
+      ogDescription: METADATA.ogDescription,
       ogImageUrl: METADATA.bannerImageUrl,
-      primaryCategory : "health-fitness",
+      primaryCategory: "health-fitness",
       requiredCapabilities: [
         "actions.ready",
         "actions.signIn",
@@ -52,9 +52,9 @@ export async function GET() {
       splashBackgroundColor: METADATA.splashBackgroundColor,
       description: METADATA.description,
       ogTitle: METADATA.name,
-      ogDescription: METADATA.description,
+      ogDescription: METADATA.ogDescription,
       ogImageUrl: METADATA.bannerImageUrl,
-      primaryCategory : "health-fitness",
+      primaryCategory: "health-fitness",
       requiredCapabilities: [
         "actions.ready",
         "actions.signIn",

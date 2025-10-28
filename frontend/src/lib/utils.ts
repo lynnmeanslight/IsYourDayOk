@@ -6,6 +6,7 @@ export const METADATA = {
   tagline: "Check in. Reflect. Grow. Own Your Wellness Journey.",
   subtitle: "Your Daily Mental Wellness Companion on Base",
   description: "Track your mood, journal, and meditate daily. Earn NFTs for streaks, join a supportive community, and grow your wellness journey on Base.",
+  ogDescription : "Track mood, journal, and meditate daily. Earn NFTs for streaks and grow your wellness journey on Base.",
   longDescription: "IsYourDayOk is a comprehensive mental health tracking platform that helps you build lasting wellness habits through daily check-ins, journaling, and mindfulness practices. Earn points for each activity, unlock achievement NFTs when you hit milestones (7-day and 30-day streaks), and visualize your progress over time. Built on Base blockchain with Farcaster integration, your mental health data stays private while your achievements remain yours forever.",
   marketingTaglines: {
     primary: "Check in. Reflect. Grow. Own Your Wellness Journey.",
