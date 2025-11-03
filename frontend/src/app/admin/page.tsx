@@ -6,7 +6,8 @@ import { chatAPI } from '~/lib/api';
 
 // Admin wallet addresses (add your admin addresses here)
 const ADMIN_ADDRESSES = [
-  '0x76967ce1457d65703445fbe024dd487a151ad993', // Replace with actual admin address
+  '0x76967ce1457d65703445fbe024dd487a151ad993',
+  '0xBa8E30787f6A9082F97b3D4E8F370b8084dB272f',
   // Add more admin addresses as needed
 ];
 
