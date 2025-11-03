@@ -252,7 +252,7 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
                 : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            History
+            Journals
           </button>
           <button 
             onClick={() => setActiveTab('nfts')} 
@@ -327,7 +327,6 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
           ) : (
             <div className="bg-white rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">Your Journals</h2>
                 <span className="text-sm text-gray-500">{journals.length} entries</span>
               </div>
               <div className="space-y-3">

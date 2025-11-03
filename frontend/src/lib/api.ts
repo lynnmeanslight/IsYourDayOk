@@ -97,12 +97,22 @@ export const chatAPI = {
     return response.json();
   },
 
-  async createMessage(type: 'admin' | 'system', content: string, userId?: string) {
+  async createMessage(type: 'admin' | 'system' | 'milestone', content: string, userId?: string) {
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type, content, userId }),
     });
+    return response.json();
+  },
+
+  async deleteMessage(messageId: string) {
+    const response = await fetch('/api/chat', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messageId }),
+    });
+    if (!response.ok) throw new Error('Failed to delete message');
     return response.json();
   },
 };

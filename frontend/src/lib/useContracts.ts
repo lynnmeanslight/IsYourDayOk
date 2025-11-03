@@ -164,19 +164,13 @@ export function useContracts(farcasterUser?: FarcasterUser) {
     }
   };
 
-  // Log mood (Database + Contract + Daily Activity)
+  // Log mood (Contract FIRST, then Database + Daily Activity)
   const logMood = async (mood: string, rating: number) => {
     if (!dbUser) throw new Error('User not initialized');
     if (!address) throw new Error('Wallet not connected');
 
     try {
-      // Save to database
-      await moodAPI.createMoodLog(dbUser.id, mood, rating);
-      
-      // Update daily activity
-      await dailyActivityAPI.updateDailyActivity(dbUser.id, getTodayDate(), { moodLogDone: true });
-      
-      // Log mood on contract
+      // 1. Execute on-chain transaction FIRST
       const hash = await writeContract(config, {
         address: POINTS_CONTRACT_ADDRESS,
         abi: IsYourDayOkPointsABI,
@@ -185,12 +179,19 @@ export function useContracts(farcasterUser?: FarcasterUser) {
         chainId: base.id,
       });
 
+      // 2. Wait for transaction confirmation
       await waitForTransactionReceipt(config, { hash });
       
-      // Update database user points (MOOD_LOG_POINTS = 10)
+      // 3. Only after successful on-chain transaction, save to database
+      await moodAPI.createMoodLog(dbUser.id, mood, rating);
+      
+      // 4. Update daily activity
+      await dailyActivityAPI.updateDailyActivity(dbUser.id, getTodayDate(), { moodLogDone: true });
+      
+      // 5. Update database user points (MOOD_LOG_POINTS = 10)
       await userAPI.updateUser(dbUser.id, { points: dbUser.points + 10 });
       
-      // Refresh both data sources
+      // 6. Refresh both data sources
       await Promise.all([refreshContractData(), refreshDbUser()]);
     } catch (err: any) {
       console.error('Error logging mood:', err);
@@ -198,19 +199,13 @@ export function useContracts(farcasterUser?: FarcasterUser) {
     }
   };
 
-  // Submit journal (Database + Contract + Daily Activity)
+  // Submit journal (Contract FIRST, then Database + Daily Activity)
   const submitJournal = async (content: string) => {
     if (!dbUser) throw new Error('User not initialized');
     if (!address) throw new Error('Wallet not connected');
 
     try {
-      // Save to database
-      await journalAPI.createJournal(dbUser.id, content);
-      
-      // Update daily activity
-      await dailyActivityAPI.updateDailyActivity(dbUser.id, getTodayDate(), { journalDone: true });
-
-      // Submit to contract
+      // 1. Execute on-chain transaction FIRST
       const hash = await writeContract(config, {
         address: POINTS_CONTRACT_ADDRESS,
         abi: IsYourDayOkPointsABI,
@@ -219,15 +214,22 @@ export function useContracts(farcasterUser?: FarcasterUser) {
         chainId: base.id,
       });
 
+      // 2. Wait for transaction confirmation
       await waitForTransactionReceipt(config, { hash });
 
-      // Update database user points and streak
+      // 3. Only after successful on-chain transaction, save to database
+      await journalAPI.createJournal(dbUser.id, content);
+      
+      // 4. Update daily activity
+      await dailyActivityAPI.updateDailyActivity(dbUser.id, getTodayDate(), { journalDone: true });
+
+      // 5. Update database user points and streak
       await userAPI.updateUser(dbUser.id, { 
         points: dbUser.points + 20,
         journalStreak: dbUser.journalStreak + 1
       });
 
-      // Refresh both data sources
+      // 6. Refresh both data sources
       await Promise.all([refreshContractData(), refreshDbUser()]);
     } catch (err: any) {
       console.error('Error submitting journal:', err);
@@ -235,19 +237,13 @@ export function useContracts(farcasterUser?: FarcasterUser) {
     }
   };
 
-  // Complete meditation (Database + Contract + Daily Activity)
+  // Complete meditation (Contract FIRST, then Database + Daily Activity)
   const completeMeditation = async (duration: number) => {
     if (!dbUser) throw new Error('User not initialized');
     if (!address) throw new Error('Wallet not connected');
 
     try {
-      // Save to database
-      await meditationAPI.createMeditation(dbUser.id, duration, true);
-      
-      // Update daily activity
-      await dailyActivityAPI.updateDailyActivity(dbUser.id, getTodayDate(), { meditationDone: true });
-
-      // Submit to contract
+      // 1. Execute on-chain transaction FIRST
       const hash = await writeContract(config, {
         address: POINTS_CONTRACT_ADDRESS,
         abi: IsYourDayOkPointsABI,
@@ -256,15 +252,22 @@ export function useContracts(farcasterUser?: FarcasterUser) {
         chainId: base.id,
       });
 
+      // 2. Wait for transaction confirmation
       await waitForTransactionReceipt(config, { hash });
 
-      // Update database user points and streak
+      // 3. Only after successful on-chain transaction, save to database
+      await meditationAPI.createMeditation(dbUser.id, duration, true);
+      
+      // 4. Update daily activity
+      await dailyActivityAPI.updateDailyActivity(dbUser.id, getTodayDate(), { meditationDone: true });
+
+      // 5. Update database user points and streak
       await userAPI.updateUser(dbUser.id, { 
         points: dbUser.points + 30,
         meditationStreak: dbUser.meditationStreak + 1
       });
 
-      // Refresh both data sources
+      // 6. Refresh both data sources
       await Promise.all([refreshContractData(), refreshDbUser()]);
     } catch (err: any) {
       console.error('Error completing meditation:', err);
