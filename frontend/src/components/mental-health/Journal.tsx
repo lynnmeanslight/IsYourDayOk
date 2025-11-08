@@ -135,7 +135,6 @@ export function Journal({ contracts }: JournalProps) {
               You've already written your journal entry for today.
             </p>
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-medium">
-              <span>✨</span>
               <span>Come back tomorrow to continue your streak</span>
             </div>
           </div>

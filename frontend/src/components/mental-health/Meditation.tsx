@@ -287,6 +287,7 @@ export function Meditation({ contracts }: MeditationProps) {
               onClick={handleStart}
               disabled={!canStart || loading}
               className="w-full bg-white text-blue-600 rounded-xl sm:rounded-2xl px-6 py-4 sm:py-5 font-semibold text-base sm:text-lg hover:bg-blue-600 hover:text-white active:bg-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl touch-manipulation min-h-[52px] sm:min-h-[60px] flex items-center justify-center gap-2"
+              style={{ border: '2px solid #3b82f6' }}
             >
               {!canStart ? (
                 <>✓ Completed Today</>

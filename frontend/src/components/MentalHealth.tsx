@@ -1,25 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useAccount } from "wagmi";
 import { useFrameContext } from "./providers/FrameProvider";
 import { useContracts } from "~/lib/useContracts";
 import { useAutoSwitchChain } from "~/lib/useAutoSwitchChain";
 import { Dashboard } from "./mental-health/Dashboard";
 import { MoodLog } from "./mental-health/MoodLog";
-import { Journal } from "./mental-health/Journal";
-import { JournalView } from "./mental-health/JournalView";
-import { Meditation } from "./mental-health/Meditation";
-import { Achievements } from "./mental-health/Achievements";
-import { ChatRoom } from "./mental-health/ChatRoom";
-import { MintModal } from "./mental-health/MintModal";
-import { Profile } from "./mental-health/Profile";
-import { OnboardingModal } from "./mental-health/OnboardingModal";
 import { truncateAddress } from "~/lib/truncateAddress";
 import { useConnect, useDisconnect } from "wagmi";
 import { config } from "./providers/WagmiProvider";
 import { getName } from '@coinbase/onchainkit/identity';
 import { base } from 'viem/chains';
+
+// Lazy load heavy components
+const Journal = lazy(() => import("./mental-health/Journal").then(m => ({ default: m.Journal })));
+const JournalView = lazy(() => import("./mental-health/JournalView").then(m => ({ default: m.JournalView })));
+const Meditation = lazy(() => import("./mental-health/Meditation").then(m => ({ default: m.Meditation })));
+const Achievements = lazy(() => import("./mental-health/Achievements").then(m => ({ default: m.Achievements })));
+const ChatRoom = lazy(() => import("./mental-health/ChatRoom").then(m => ({ default: m.ChatRoom })));
+const MintModal = lazy(() => import("./mental-health/MintModal").then(m => ({ default: m.MintModal })));
+const Profile = lazy(() => import("./mental-health/Profile").then(m => ({ default: m.Profile })));
+const OnboardingModal = lazy(() => import("./mental-health/OnboardingModal").then(m => ({ default: m.OnboardingModal })));
 
 type View =
   | "dashboard"
@@ -367,9 +369,11 @@ export function MentalHealth() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Onboarding Modal - Show on first visit */}
-      {showOnboarding && (
-        <OnboardingModal onComplete={handleOnboardingComplete} />
-      )}
+      <Suspense fallback={null}>
+        {showOnboarding && (
+          <OnboardingModal onComplete={handleOnboardingComplete} />
+        )}
+      </Suspense>
 
       <div className="max-w-md mx-auto px-3 pt-3 pb-20">
         {/* Mobile-Only Header - Compact */}
@@ -439,25 +443,29 @@ export function MentalHealth() {
 
         {/* Main Content */}
         <main>
-          {currentView === "dashboard" && <Dashboard contracts={contracts} />}
+          {currentView === "dashboard" && <Dashboard contracts={contracts} onMintClick={handleMintClick} />}
           {currentView === "mood" && <MoodLog contracts={contracts} />}
-          {currentView === "journal" && <Journal contracts={contracts} />}
-          {currentView === "meditation" && <Meditation contracts={contracts} />}
-          {currentView === "chat" && <ChatRoom contracts={contracts} />}
-          {currentView === "profile" && <Profile contracts={contracts} onMintClick={handleMintClick} />}
+          <Suspense fallback={<div className="flex items-center justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>}>
+            {currentView === "journal" && <Journal contracts={contracts} />}
+            {currentView === "meditation" && <Meditation contracts={contracts} />}
+            {currentView === "chat" && <ChatRoom contracts={contracts} />}
+            {currentView === "profile" && <Profile contracts={contracts} onMintClick={handleMintClick} />}
+          </Suspense>
         </main>
 
         {/* Mint Modal */}
-        {showMintModal && selectedAchievement && (
-          <MintModal
-            achievement={selectedAchievement}
-            contracts={contracts}
-            onClose={() => {
-              setShowMintModal(false);
-              setSelectedAchievement(null);
-            }}
-          />
-        )}
+        <Suspense fallback={null}>
+          {showMintModal && selectedAchievement && (
+            <MintModal
+              achievement={selectedAchievement}
+              contracts={contracts}
+              onClose={() => {
+                setShowMintModal(false);
+                setSelectedAchievement(null);
+              }}
+            />
+          )}
+        </Suspense>
       </div>
 
       {/* Mobile Bottom Navigation - Single Row: 5 Items */}
@@ -572,9 +580,6 @@ export function MentalHealth() {
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4">
           <div className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
             <div className="text-center mb-5">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">⚠️</span>
-              </div>
               <h2 className="text-xl font-bold mb-2">Disconnect Wallet?</h2>
               <p className="text-sm text-gray-600">
                 This will disconnect your wallet and clear all your session data. You'll need to reconnect to continue using the app.

@@ -32,7 +32,7 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
     setStep('minting');
 
     try {
-      // Step 1: Create achievement record with improvement rating
+      // Step 1: Create achievement record with improvement rating (database preparation)
       const newAchievement = await contracts.createAchievement(
         achievement.type,
         achievement.target,
@@ -40,6 +40,7 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
       );
 
       // Step 2: Call server-side API to mint NFT on blockchain
+      // This will: 1) Execute blockchain transaction, 2) Wait for confirmation, 3) Update database
       const mintResponse = await fetch('/api/mint-nft', {
         method: 'POST',
         headers: {
@@ -60,6 +61,7 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
 
       const mintData = await mintResponse.json();
 
+      // Success - blockchain transaction confirmed and database updated
       setStep('success');
     } catch (err: any) {
       console.error('Minting error:', err);

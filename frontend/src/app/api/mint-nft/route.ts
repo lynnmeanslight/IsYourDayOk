@@ -90,8 +90,7 @@ export async function POST(request: NextRequest) {
 
     // Generate metadata URI for the NFT
     // Using your website for metadata (faster and updatable)
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL || "https://isyourdayok.com";
+    const baseUrl ="https://is-your-day-ok.vercel.app";
     const metadataURIs = {
       "journal-7": `${baseUrl}/nft-metadata/journal-7.json`,
       "journal-30": `${baseUrl}/nft-metadata/journal-30.json`,
@@ -110,17 +109,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Mint the NFT
-    console.log("Minting NFT for:", userAddress);
-    console.log(
-      "Achievement type:",
-      achievementType,
-      "(enum:",
-      achievementTypeEnum,
-      ")"
-    );
-    console.log("Improvement rating:", improvementRating);
-    console.log("Metadata URI:", metadataUri);
-
     const hash = await walletClient.writeContract({
       address: NFT_CONTRACT_ADDRESS,
       abi: IsYourDayOkNFTABI,

@@ -21,9 +21,7 @@ export function useAutoSwitchChain() {
         setSwitchError(null);
 
         try {
-          console.log(`Switching from chain ${chain.id} to Base (${TARGET_CHAIN_ID})...`);
           await switchChainAsync({ chainId: TARGET_CHAIN_ID });
-          console.log('Successfully switched to Base');
         } catch (error: any) {
           console.error('Failed to switch chain:', error);
           setSwitchError(error.message || 'Failed to switch to Base');

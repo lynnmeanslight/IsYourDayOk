@@ -17,12 +17,9 @@ export function SwapTokenAction() {
         sellAmount: "1000000", // 1 USDC
       });
       
-      if (result.success) {
-        console.log("Swap successful:", result.swap);
-      } else {
+      if (!result.success) {
         const errorMessage = result.error?.message || result.reason || "Swap failed";
         setError(errorMessage);
-        console.log("Swap failed:", result.reason, result.error);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Error performing swap";

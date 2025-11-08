@@ -2,6 +2,23 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  
+  // Performance optimizations
+  reactStrictMode: true,
+  swcMinify: true,
+  
+  // Enable compression
+  compress: true,
+  
+  // Optimize images
+  images: {
+    unoptimized: false,
+    formats: ['image/webp', 'image/avif'],
+  },
+  
+  // Production source maps disabled for faster builds
+  productionBrowserSourceMaps: false,
+  
   async headers() {
     return [
       {
@@ -18,6 +35,10 @@ const nextConfig: NextConfig = {
           {
             key: "Access-Control-Allow-Origin",
             value: "*"
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable"
           }
         ]
       }

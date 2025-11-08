@@ -171,7 +171,6 @@ export function BasePay() {
       });
 
       const payResult = result as PayResult;
-      console.log('pay result', payResult);
       const transactionId = payResult?.id || payResult?.transactionId || 'unknown';
       
       setPaymentState({

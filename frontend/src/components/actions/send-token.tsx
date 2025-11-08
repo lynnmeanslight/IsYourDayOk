@@ -26,12 +26,10 @@ export function SendTokenAction() {
       });
       
       if (result.success) {
-        console.log("Send successful:", result.send);
         setSuccess(`Transaction initiated successfully!`);
       } else {
         const errorMessage = result.error?.message || result.reason || "Send failed";
         setError(errorMessage);
-        console.log("Send failed:", result.reason, result.error);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Error sending token";

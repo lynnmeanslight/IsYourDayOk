@@ -14,7 +14,6 @@ export async function GET(request: NextRequest) {
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
-
     return NextResponse.json(achievements);
   } catch (error) {
     console.error('Error fetching achievements:', error);

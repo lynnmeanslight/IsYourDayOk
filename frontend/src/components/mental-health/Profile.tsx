@@ -38,28 +38,28 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
       id: 'journal-7',
       title: '7-Day Journal Streak',
       description: 'Complete 7 consecutive days of journaling',
-      icon: '/icons/journal.png',
+      icon: '/nft/seventh_day_journaling_streak.png',
       days: 7,
     },
     {
       id: 'journal-30',
       title: '30-Day Journal Streak',
       description: 'Complete 30 consecutive days of journaling',
-      icon: '/icons/journal.png',
+      icon: '/nft/thirtieth_day_journaling_streak.png',
       days: 30,
     },
     {
       id: 'meditation-7',
       title: '7-Day Meditation Streak',
       description: 'Complete 7 consecutive days of meditation',
-      icon: '/icons/meditation.png',
+      icon: '/nft/seventh_day_meditation_streak.png',
       days: 7,
     },
     {
       id: 'meditation-30',
       title: '30-Day Meditation Streak',
       description: 'Complete 30 consecutive days of meditation',
-      icon: '/icons/trophy.png',
+      icon: '/nft/thirtieth_day_meditation_streak.png',
       days: 30,
     },
   ];
@@ -129,56 +129,94 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
           try {
             const achievementsData = await nftAPI.getAchievements(contracts.dbUser.id);
             
-            // Transform raw database achievements with display metadata
-            const enrichedAchievements = achievementsData.map((ach: any) => {
-              const metadata = achievementTypes.find(t => t.id === ach.type);
+            // Create a map of minted achievements
+            const mintedAchievements = new Map(
+              achievementsData.map((ach: any) => [ach.type, ach])
+            );
+            
+            // Generate all possible achievements based on current streaks
+            const allAchievements = achievementTypes.map((metadata) => {
+              const mintedAch: any = mintedAchievements.get(metadata.id);
               
               // Determine current progress based on achievement type
               let current = 0;
-              if (ach.type.includes('journal')) {
+              if (metadata.id.includes('journal')) {
                 current = journalStreak;
-              } else if (ach.type.includes('meditation')) {
+              } else if (metadata.id.includes('meditation')) {
                 current = meditationStreak;
               }
               
+              // Cap current at target (e.g., show 7/7 not 9/7)
+              const displayCurrent = Math.min(current, metadata.days);
+              
               // Determine status
               let status = 'locked';
-              if (ach.minted) {
+              if (mintedAch?.minted === true) {
                 status = 'minted';
-              } else if (current >= ach.days) {
+              } else if (current >= metadata.days) {
                 status = 'unlocked';
               } else if (current > 0) {
                 status = 'in-progress';
               }
               
               return {
-                ...ach,
-                title: metadata?.title || ach.type,
-                description: metadata?.description || '',
-                icon: metadata?.icon || '/icons/trophy.png',
-                target: ach.days,
-                current,
+                id: mintedAch?.id || metadata.id,
+                type: metadata.id,
+                userId: contracts.dbUser.id,
+                days: metadata.days,
+                title: metadata.title,
+                description: metadata.description,
+                icon: metadata.icon,
+                target: metadata.days,
+                current: displayCurrent,
                 status,
+                minted: mintedAch?.minted === true,
+                tokenId: mintedAch?.tokenId,
+                contractAddress: mintedAch?.contractAddress,
+                transactionHash: mintedAch?.transactionHash,
               };
             });
             
-            setAchievements(enrichedAchievements || []);
+            setAchievements(allAchievements);
+            
+            // Count minted NFTs
+            const nftCount = allAchievements.filter((a) => a.minted).length;
+            
+            setStats({
+              totalPoints: points,
+              journalStreak,
+              meditationStreak,
+              totalJournals: journalsCount,
+              totalMeditations: meditations,
+              totalMoods: moods,
+              nftCount,
+            });
           } catch (err) {
             console.error('Error fetching achievements:', err);
+            
+            // Set stats even if achievements fail
+            setStats({
+              totalPoints: points,
+              journalStreak,
+              meditationStreak,
+              totalJournals: journalsCount,
+              totalMeditations: meditations,
+              totalMoods: moods,
+              nftCount: 0,
+            });
           }
+        } else {
+          // Set stats when no user
+          setStats({
+            totalPoints: points,
+            journalStreak,
+            meditationStreak,
+            totalJournals: journalsCount,
+            totalMeditations: meditations,
+            totalMoods: moods,
+            nftCount: 0,
+          });
         }
-
-        const nftCount = achievements.filter((a) => a.minted).length;
-
-        setStats({
-          totalPoints: points,
-          journalStreak,
-          meditationStreak,
-          totalJournals: journalsCount,
-          totalMeditations: meditations,
-          totalMoods: moods,
-          nftCount,
-        });
       } catch (error) {
         console.error('Error loading stats:', error);
       } finally {
@@ -187,7 +225,7 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
     }
 
     loadStats();
-  }, [contracts.userData, contracts.dbUser, achievements.length]);
+  }, [contracts.userData, contracts.dbUser]); // Removed achievements.length dependency
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -351,52 +389,57 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
 
       {/* NFTs Tab */}
       {activeTab === 'nfts' && (
-        <div className="space-y-4">
-          {achievements.length === 0 ? (
-            <div className="bg-white rounded-3xl p-12 text-center">
-              <div className="w-20 h-20 mx-auto mb-3 opacity-30">
-                <img src="/icons/trophy.png" alt="Trophy" className="w-full h-full object-contain drop-shadow-md" />
+        <div className="space-y-3">
+          {(() => {
+            const mintedAchievements = achievements.filter(a => a.minted === true);
+            return mintedAchievements.length === 0 ? (
+              <div className="bg-white rounded-2xl p-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-3 opacity-20">
+                  <img src="/icons/trophy.png" alt="Trophy" className="w-full h-full object-contain" />
+                </div>
+                <h3 className="text-sm font-bold mb-1 text-gray-900">No NFTs yet</h3>
+                <p className="text-xs text-gray-500">Mint achievements from Dashboard</p>
               </div>
-              <h3 className="text-lg font-bold mb-2 text-gray-900">No achievements yet</h3>
-              <p className="text-sm text-gray-500">Keep building streaks to unlock NFTs</p>
-            </div>
-          ) : (
-            <div className="bg-white rounded-2xl p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Achievements</h2>
+            ) : (
               <div className="space-y-3">
-                {achievements.map((achievement, index) => (
-                  <div key={index} className="pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <img src={achievement.icon} alt={achievement.title} className="w-10 h-10 object-contain drop-shadow-md" />
-                        <div>
-                          <h3 className="font-semibold text-sm text-gray-900">{achievement.title}</h3>
-                          <p className="text-xs text-gray-500">{achievement.current}/{achievement.target}</p>
-                        </div>
-                      </div>
-                      {achievement.status === 'unlocked' && !achievement.minted && (
-                        <button 
-                          onClick={() => onMintClick(achievement)} 
-                          className="px-4 py-2.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors min-h-[44px]"
-                        >
-                          Mint
-                        </button>
-                      )}
-                      {achievement.minted && (
-                        <span className="text-xs text-green-600 font-medium">✓ Minted</span>
-                      )}
-                    </div>
-                    <div className="w-full bg-gray-100 rounded-full h-1.5">
-                      <div 
-                        className="bg-blue-600 h-1.5 rounded-full transition-all" 
-                        style={{ width: `${(achievement.current / achievement.target) * 100}%` }} 
+                {mintedAchievements.map((achievement, index) => (
+                  <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+                    {/* NFT Image Section */}
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 aspect-square w-full flex items-center justify-center relative">
+                      <img 
+                        src={achievement.icon} 
+                        alt={achievement.title} 
+                        className="w-3/4 h-3/4 object-contain drop-shadow-2xl"
                       />
+                      <div className="absolute bottom-4 right-4 bg-blue-600 text-white rounded-full p-2.5 shadow-lg">
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
+                    
+                    {/* NFT Info Section */}
+                    <div className="p-4">
+                      <h3 className="font-bold text-base text-gray-900 mb-1">{achievement.title}</h3>
+                      <p className="text-xs text-blue-600 font-medium mb-3">✓ Minted on Base</p>
+                      
+                      {/* View on BaseScan Button */}
+                      {address && (
+                        <a 
+                          href={`https://basescan.org/address/${address}#nfttransfers`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full text-center py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
+                        >
+                          View on BaseScan
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       )}
 

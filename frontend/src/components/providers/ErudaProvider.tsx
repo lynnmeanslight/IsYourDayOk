@@ -28,8 +28,6 @@ export default function ErudaProvider() {
           setTimeout(() => {
             erudaInstance.position({ x: window.innerWidth - 60, y: window.innerHeight - 60 });
           }, 100);
-          
-          console.log("Eruda initialized for debugging");
         }
       });
   }, []);

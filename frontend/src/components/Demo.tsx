@@ -130,7 +130,7 @@ export default function Demo() {
     try {
       await sdk.haptics.selectionChanged();
     } catch (error) {
-      console.log('Haptics not supported:', error);
+      // Haptics not supported
     }
 
     setCurrentActionPage(actionId);
@@ -141,7 +141,7 @@ export default function Demo() {
     try {
       await sdk.haptics.impactOccurred('light');
     } catch (error) {
-      console.log('Haptics not supported:', error);
+      // Haptics not supported
     }
 
     setCurrentActionPage("list");
@@ -152,7 +152,7 @@ export default function Demo() {
     try {
       await sdk.haptics.selectionChanged();
     } catch (error) {
-      console.log('Haptics not supported:', error);
+      // Haptics not supported
     }
 
     setCurrentWalletPage(walletActionId);
@@ -163,7 +163,7 @@ export default function Demo() {
     try {
       await sdk.haptics.impactOccurred('light');
     } catch (error) {
-      console.log('Haptics not supported:', error);
+      // Haptics not supported
     }
 
     setCurrentWalletPage("list");

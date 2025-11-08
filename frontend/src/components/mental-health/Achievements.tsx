@@ -15,11 +15,64 @@ export function Achievements({ contracts, onMintClick }: AchievementsProps) {
 
   useEffect(() => {
     async function fetchAchievements() {
-      if (!dbUser) return;
+      if (!dbUser) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const data = await nftAPI.getAchievements(dbUser.id);
-        setAchievements(data);
+        
+        // Create a map of minted achievements
+        const mintedAchievements = new Map(
+          data.map((ach: any) => [ach.type, ach])
+        );
+        
+        // Get current streaks
+        const journalStreak = userData ? Number(userData.journalStreak) : (dbUser?.journalStreak || 0);
+        const meditationStreak = userData ? Number(userData.meditationStreak) : (dbUser?.meditationStreak || 0);
+        
+        // Generate all possible achievements based on current streaks
+        const allAchievements = achievementTypes.map((metadata) => {
+          const mintedAch: any = mintedAchievements.get(metadata.id);
+          
+          // Determine current progress
+          let current = 0;
+          if (metadata.id.includes('journal')) {
+            current = journalStreak;
+          } else if (metadata.id.includes('meditation')) {
+            current = meditationStreak;
+          }
+          
+          // Cap current at target (e.g., show 7/7 not 9/7)
+          const displayCurrent = Math.min(current, metadata.days);
+          
+          // Determine status
+          let status = 'locked';
+          if (mintedAch?.minted) {
+            status = 'minted';
+          } else if (current >= metadata.days) {
+            status = 'unlocked';
+          } else if (current > 0) {
+            status = 'in-progress';
+          }
+          
+          return {
+            id: mintedAch?.id || metadata.id,
+            type: metadata.id,
+            title: metadata.title,
+            description: metadata.description,
+            icon: metadata.emoji,
+            target: metadata.days,
+            current: displayCurrent,
+            status,
+            minted: mintedAch?.minted || false,
+            tokenId: mintedAch?.tokenId,
+            improvementRating: mintedAch?.improvementRating,
+          };
+        });
+        
+        setAchievements(allAchievements);
       } catch (error) {
         console.error('Error fetching achievements:', error);
       } finally {
@@ -28,7 +81,7 @@ export function Achievements({ contracts, onMintClick }: AchievementsProps) {
     }
 
     fetchAchievements();
-  }, [dbUser]);
+  }, [dbUser, userData]);
 
   const canEarnAchievement = (type: string) => {
     if (!dbUser) return false;
