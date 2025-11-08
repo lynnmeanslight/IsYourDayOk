@@ -78,12 +78,12 @@ export function JournalView({ contracts }: JournalViewProps) {
         {journals.map((journal) => (
           <div
             key={journal.id}
-            className="border border-border rounded-lg p-6 bg-white hover:bg-blue-50 hover:border-blue-200 transition-all cursor-pointer"
+            className="border border-border rounded-lg p-6 bg-white hover:bg-purple-50 hover:border-purple-200 transition-all cursor-pointer"
             onClick={() => setSelectedJournal(journal)}
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
-                <img src="/icons/journal.png" alt="Journal" className="w-6 h-6 object-contain" />
+                <img src="/icons/journal.png" alt="Journal" className="w-7 h-7 object-contain drop-shadow-md" />
                 <span className="text-sm text-muted-foreground">
                   {formatDate(journal.createdAt)}
                 </span>
@@ -117,7 +117,7 @@ export function JournalView({ contracts }: JournalViewProps) {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <img src="/icons/journal.png" alt="Journal" className="w-7 h-7 object-contain" />
+                  <img src="/icons/journal.png" alt="Journal" className="w-8 h-8 object-contain drop-shadow-md" />
                   <span className="text-sm text-muted-foreground">
                     {formatDate(selectedJournal.createdAt)}
                   </span>

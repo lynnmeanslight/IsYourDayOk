@@ -204,7 +204,7 @@ export function Meditation({ contracts }: MeditationProps) {
         </div>
 
         {/* Quick Tips - Mobile optimized */}
-        <div className="mb-5 sm:mb-6 bg-blue-50 rounded-xl p-3 border border-blue-100">
+        <div className="mb-5 sm:mb-6 bg-amber-50 rounded-xl p-3 border border-amber-100">
           <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-700">
             <span className="text-base sm:text-lg flex-shrink-0">💡</span>
             <div className="flex-1 leading-relaxed">
@@ -292,8 +292,8 @@ export function Meditation({ contracts }: MeditationProps) {
                 <>✓ Completed Today</>
               ) : (
                 <>
-                  <div className="w-10 h-10 sm:w-10 sm:h-10 bg-white rounded-lg p-1 flex items-center justify-center">
-                    <img src="/icons/meditation.png" alt="Meditation" className="w-full h-full object-contain" />
+                  <div className="w-12 h-12 sm:w-12 sm:h-12 flex items-center justify-center">
+                    <img src="/icons/meditation.png" alt="Meditation" className="w-full h-full object-contain drop-shadow-lg" />
                   </div>
                   <span>Start Meditation</span>
                 </>
@@ -366,8 +366,8 @@ export function Meditation({ contracts }: MeditationProps) {
 
         {/* Success Message - Mobile optimized */}
         {success && (
-          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-xl sm:rounded-2xl">
-            <p className="text-xs sm:text-sm text-blue-600 font-medium text-center leading-relaxed">
+          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-xl sm:rounded-2xl">
+            <p className="text-xs sm:text-sm text-green-600 font-medium text-center leading-relaxed">
               ✓ Meditation complete! +30 points & streak extended
             </p>
           </div>

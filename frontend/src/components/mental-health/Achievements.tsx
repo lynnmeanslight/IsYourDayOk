@@ -90,16 +90,16 @@ export function Achievements({ contracts, onMintClick }: AchievementsProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'unlocked': return 'bg-blue-50 border-blue-400';
-      case 'in-progress': return 'bg-white border-blue-300';
+      case 'unlocked': return 'bg-green-50 border-green-400';
+      case 'in-progress': return 'bg-white border-purple-300';
       default: return 'bg-gray-50 border-gray-300';
     }
   };
 
   const getProgressColor = (status: string) => {
     switch (status) {
-      case 'unlocked': return 'bg-blue-600';
-      case 'in-progress': return 'bg-blue-400';
+      case 'unlocked': return 'bg-green-600';
+      case 'in-progress': return 'bg-purple-400';
       default: return 'bg-gray-300';
     }
   };
@@ -178,7 +178,7 @@ export function Achievements({ contracts, onMintClick }: AchievementsProps) {
                 return (
                   <div
                     key={achievement.id}
-                    className="bg-blue-50 border-2 border-blue-400 rounded-2xl p-4 hover:scale-105 transition-transform"
+                    className="bg-green-50 border-2 border-green-400 rounded-2xl p-4 hover:scale-105 transition-transform"
                   >
                     <div className="text-center mb-3 flex items-center justify-center">
                       <div className="w-20 h-20">

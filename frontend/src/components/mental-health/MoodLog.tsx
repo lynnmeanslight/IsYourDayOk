@@ -175,9 +175,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount, useSwitchChain } from "wagmi";
 import { base } from "wagmi/chains";
+import { dailyActivityAPI } from "~/lib/api";
 
 interface MoodLogProps {
   contracts: any;
@@ -191,20 +192,59 @@ const moods = [
   { emoji: "/emojis/sad.png", label: "Sad", value: "sad" },
 ];
 
+const getTodayDate = () => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+};
+
 export function MoodLog({ contracts }: MoodLogProps) {
   const [selectedMood, setSelectedMood] = useState("");
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [alreadyLogged, setAlreadyLogged] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(true);
   const { chain } = useAccount();
   const { switchChainAsync } = useSwitchChain();
+
+  // Check if mood was already logged today
+  useEffect(() => {
+    async function checkDailyActivity() {
+      if (!contracts.dbUser?.id) {
+        setCheckingStatus(false);
+        return;
+      }
+
+      try {
+        const activity = await dailyActivityAPI.getDailyActivity(
+          contracts.dbUser.id,
+          getTodayDate()
+        );
+        
+        setAlreadyLogged(activity?.moodLogDone || false);
+      } catch (err) {
+        console.error('Error checking daily activity:', err);
+        // On error, allow user to try (fail-open approach)
+        setAlreadyLogged(false);
+      } finally {
+        setCheckingStatus(false);
+      }
+    }
+
+    checkDailyActivity();
+  }, [contracts.dbUser?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!selectedMood) {
       setError("Please select a mood");
+      return;
+    }
+
+    if (alreadyLogged) {
+      setError("You've already logged your mood today. Come back tomorrow!");
       return;
     }
 
@@ -222,6 +262,7 @@ export function MoodLog({ contracts }: MoodLogProps) {
 
       await contracts.logMood(selectedMood, rating);
       setSuccess(true);
+      setAlreadyLogged(true); // Update state to prevent multiple submissions
       setSelectedMood("");
       setRating(5);
 
@@ -248,6 +289,35 @@ export function MoodLog({ contracts }: MoodLogProps) {
           </p>
         </div>
 
+        {/* Loading State */}
+        {checkingStatus && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-sm text-gray-500">Checking today's status...</p>
+          </div>
+        )}
+
+        {/* Already Completed State */}
+        {!checkingStatus && alreadyLogged && (
+          <div className="text-center py-12">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Mood Logged Today!</h3>
+            <p className="text-gray-600 mb-4">
+              You've already logged your mood for today.
+            </p>
+            <div className="inline-flex items-center gap-2 bg-purple-50 text-purple-600 px-4 py-2 rounded-full text-sm font-medium">
+              <span>✨</span>
+              <span>Come back tomorrow to continue your streak</span>
+            </div>
+          </div>
+        )}
+
+        {/* Mood Logging Form */}
+        {!checkingStatus && !alreadyLogged && (
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Mood Selection */}
           <div>
@@ -257,20 +327,20 @@ export function MoodLog({ contracts }: MoodLogProps) {
                   key={mood.value}
                   type="button"
                   onClick={() => setSelectedMood(mood.value)}
-                  className={`flex flex-col items-center justify-center p-1 rounded-2xl transition-all ${
+                  className={`flex flex-col items-center p-2 rounded-2xl transition-all h-24 ${
                     selectedMood === mood.value
-                      ? "ring-2 ring-blue-500 scale-105"
-                      : "hover:bg-gray-100 active:scale-95"
+                      ? "ring-2 ring-purple-500 bg-purple-50 scale-105"
+                      : "hover:bg-gray-50 active:scale-95"
                   }`}
                 >
-                  <div className="w-12 h-12 mb-1.5 flex items-center justify-center">
+                  <div className="w-14 h-14 flex items-center justify-center flex-shrink-0">
                     <img
                       src={mood.emoji}
                       alt={mood.label}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain drop-shadow-md"
                     />
                   </div>
-                  <span className="text-[10px] text-gray-700 font-medium text-center leading-tight">
+                  <span className="text-[10px] text-gray-700 font-medium text-center leading-tight mt-1">
                     {mood.label}
                   </span>
                 </button>
@@ -310,8 +380,8 @@ export function MoodLog({ contracts }: MoodLogProps) {
 
           {/* Success Message */}
           {success && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-center">
-              <p className="text-xs text-blue-600 font-medium">
+            <div className="p-3 bg-green-50 border border-green-200 rounded-xl text-center">
+              <p className="text-xs text-green-600 font-medium">
                 ✓ Mood logged successfully! +10 points
               </p>
             </div>
@@ -326,6 +396,7 @@ export function MoodLog({ contracts }: MoodLogProps) {
             {loading ? "Logging..." : "Log Mood"}
           </button>
         </form>
+        )}
       </div>
     </div>
   );

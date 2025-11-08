@@ -14,6 +14,7 @@ import { Achievements } from "./mental-health/Achievements";
 import { ChatRoom } from "./mental-health/ChatRoom";
 import { MintModal } from "./mental-health/MintModal";
 import { Profile } from "./mental-health/Profile";
+import { OnboardingModal } from "./mental-health/OnboardingModal";
 import { truncateAddress } from "~/lib/truncateAddress";
 import { useConnect, useDisconnect } from "wagmi";
 import { config } from "./providers/WagmiProvider";
@@ -41,9 +42,28 @@ export function MentalHealth() {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const [basename, setBasename] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   
   // Auto-switch to Base
   const { isCorrectChain, isSwitching, switchError } = useAutoSwitchChain();
+
+  // Check if user is visiting for the first time
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hasCompletedOnboarding = localStorage.getItem('onboarding_complete');
+      if (!hasCompletedOnboarding) {
+        setShowOnboarding(true);
+      }
+    }
+  }, []);
+
+  // Handle onboarding completion
+  const handleOnboardingComplete = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('onboarding_complete', 'true');
+    }
+    setShowOnboarding(false);
+  };
 
   // Fetch Basename for the connected address
   useEffect(() => {
@@ -215,11 +235,11 @@ export function MentalHealth() {
           <div className="max-w-md w-full">
             {/* Logo and Title */}
             <div className="text-center mb-8">
-              <div className="w-24 h-24 mx-auto mb-4 bg-white rounded-3xl shadow-lg p-4 flex items-center justify-center">
+              <div className="w-28 h-28 mx-auto mb-4 flex items-center justify-center">
                 <img 
                   src="/icons/IsYourDayOkfinal.png" 
                   alt="IsYourDayOk Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain drop-shadow-2xl"
                 />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">IsYourDayOk</h1>
@@ -231,8 +251,8 @@ export function MentalHealth() {
               <h2 className="text-lg font-bold text-gray-900 mb-4">Start Your Wellness Journey</h2>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <img src="/emojis/happy.png" alt="Mood" className="w-6 h-6 object-contain" />
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                    <img src="/emojis/happy.png" alt="Mood" className="w-full h-full object-contain drop-shadow-md" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 text-sm">Track Your Mood</h3>
@@ -240,8 +260,8 @@ export function MentalHealth() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <img src="/icons/journal.png" alt="Journal" className="w-6 h-6 object-contain" />
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                    <img src="/icons/journal.png" alt="Journal" className="w-full h-full object-contain drop-shadow-md" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 text-sm">Journal Daily</h3>
@@ -249,8 +269,8 @@ export function MentalHealth() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <img src="/icons/meditation.png" alt="Meditation" className="w-6 h-6 object-contain" />
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                    <img src="/icons/meditation.png" alt="Meditation" className="w-full h-full object-contain drop-shadow-md" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 text-sm">Meditate</h3>
@@ -258,8 +278,8 @@ export function MentalHealth() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <img src="/icons/trophy.png" alt="NFTs" className="w-6 h-6 object-contain" />
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                    <img src="/icons/trophy.png" alt="NFTs" className="w-full h-full object-contain drop-shadow-md" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 text-sm">Earn NFTs</h3>
@@ -275,7 +295,7 @@ export function MentalHealth() {
               type="button"
               className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl active:scale-95 transition-all"
             >
-              {farcasterUser ? '🔗 Connect with Farcaster' : '🔗 Connect Wallet'}
+              {farcasterUser ? '🔗 Connect Your Account' : '🔗 Connect Wallet'}
             </button>
 
             {/* Info */}
@@ -346,6 +366,11 @@ export function MentalHealth() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      {/* Onboarding Modal - Show on first visit */}
+      {showOnboarding && (
+        <OnboardingModal onComplete={handleOnboardingComplete} />
+      )}
+
       <div className="max-w-md mx-auto px-3 pt-3 pb-20">
         {/* Mobile-Only Header - Compact */}
         <header className="mb-4 flex items-center justify-between bg-white rounded-3xl p-3 shadow-sm sticky top-3 z-10 backdrop-blur-lg bg-white/95">

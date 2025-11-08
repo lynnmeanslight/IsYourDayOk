@@ -76,11 +76,11 @@ export function ChatRoom({ contracts }: ChatRoomProps) {
   const getMessageColor = (type: string) => {
     switch (type) {
       case 'mood':
-        return 'bg-blue-50 border-blue-200';
+        return 'bg-purple-50 border-purple-200';
       case 'achievement':
         return 'bg-green-50 border-green-200';
       case 'milestone':
-        return 'bg-purple-50 border-purple-200';
+        return 'bg-amber-50 border-amber-200';
       case 'admin':
         return 'bg-yellow-50 border-yellow-200';
       case 'system':
@@ -101,7 +101,7 @@ export function ChatRoom({ contracts }: ChatRoomProps) {
     <div className="max-w-4xl mx-auto px-2 sm:px-4">
       <div className="border border-border rounded-xl sm:rounded-2xl bg-white overflow-hidden shadow-sm">
         {/* Header - Mobile optimized */}
-        <div className="p-3 sm:p-4 border-b border-border bg-blue-50">
+        <div className="p-3 sm:p-4 border-b border-border bg-purple-50">
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
               <h2 className="text-base sm:text-xl font-bold truncate">Community Updates</h2>
@@ -121,7 +121,7 @@ export function ChatRoom({ contracts }: ChatRoomProps) {
           {messages.length === 0 ? (
             <div className="text-center py-8 sm:py-12 px-4">
               <div className="flex items-center justify-center mb-3 sm:mb-4">
-                <img src="/icons/channel.png" alt="Chat" className="w-16 h-16 sm:w-20 sm:h-20 object-contain opacity-50" />
+                <img src="/icons/channel.png" alt="Chat" className="w-20 h-20 sm:w-24 sm:h-24 object-contain opacity-50 drop-shadow-md" />
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">No messages yet</p>
             </div>

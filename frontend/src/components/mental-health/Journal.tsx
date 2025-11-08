@@ -1,20 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount, useSwitchChain } from 'wagmi';
 import { base } from 'wagmi/chains';
+import { dailyActivityAPI } from '~/lib/api';
 
 interface JournalProps {
   contracts: any;
 }
+
+const getTodayDate = () => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+};
 
 export function Journal({ contracts }: JournalProps) {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [alreadyJournaled, setAlreadyJournaled] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(true);
   const { chain } = useAccount();
   const { switchChainAsync } = useSwitchChain();
+
+  // Check if journal was already submitted today
+  useEffect(() => {
+    async function checkDailyActivity() {
+      if (!contracts.dbUser?.id) {
+        setCheckingStatus(false);
+        return;
+      }
+
+      try {
+        const activity = await dailyActivityAPI.getDailyActivity(
+          contracts.dbUser.id,
+          getTodayDate()
+        );
+        
+        setAlreadyJournaled(activity?.journalDone || false);
+      } catch (err) {
+        console.error('Error checking daily activity:', err);
+        setAlreadyJournaled(false);
+      } finally {
+        setCheckingStatus(false);
+      }
+    }
+
+    checkDailyActivity();
+  }, [contracts.dbUser?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +60,11 @@ export function Journal({ contracts }: JournalProps) {
 
     if (content.length < 10) {
       setError('Journal entry must be at least 10 characters');
+      return;
+    }
+
+    if (alreadyJournaled) {
+      setError("You've already journaled today. Come back tomorrow!");
       return;
     }
 
@@ -43,6 +82,7 @@ export function Journal({ contracts }: JournalProps) {
 
       await contracts.submitJournal(content);
       setSuccess(true);
+      setAlreadyJournaled(true); // Update state to prevent multiple submissions
       setContent('');
       
       setTimeout(() => setSuccess(false), 3000);
@@ -74,6 +114,35 @@ export function Journal({ contracts }: JournalProps) {
           </p>
         </div>
 
+        {/* Loading State */}
+        {checkingStatus && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-sm text-gray-500">Checking today's status...</p>
+          </div>
+        )}
+
+        {/* Already Completed State */}
+        {!checkingStatus && alreadyJournaled && (
+          <div className="text-center py-12">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Journal Entry Submitted!</h3>
+            <p className="text-gray-600 mb-4">
+              You've already written your journal entry for today.
+            </p>
+            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-medium">
+              <span>✨</span>
+              <span>Come back tomorrow to continue your streak</span>
+            </div>
+          </div>
+        )}
+
+        {/* Journal Form */}
+        {!checkingStatus && !alreadyJournaled && (
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 lg:space-y-6">
           {/* Journal Textarea - Mobile optimized */}
           <div>
@@ -129,8 +198,10 @@ export function Journal({ contracts }: JournalProps) {
             )}
           </button>
         </form>
+        )}
 
         {/* Writing Prompts - Mobile optimized */}
+        {!checkingStatus && !alreadyJournaled && (
         <details className="mt-4 sm:mt-5 lg:mt-6 group">
           <summary className="cursor-pointer text-sm sm:text-base font-medium text-gray-600 hover:text-gray-900 active:text-gray-900 flex items-center gap-2 p-2 -mx-2 rounded-lg hover:bg-gray-50 touch-manipulation min-h-[44px]">
             <span className="text-lg">💡</span>
@@ -147,6 +218,7 @@ export function Journal({ contracts }: JournalProps) {
             <li className="leading-relaxed">• What's one thing you learned about yourself?</li>
           </ul>
         </details>
+        )}
       </div>
     </div>
   );

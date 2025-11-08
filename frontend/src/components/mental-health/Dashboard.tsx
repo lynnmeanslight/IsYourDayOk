@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { dailyActivityAPI, moodAPI } from '~/lib/api';
 
 interface DashboardProps {
@@ -12,6 +12,12 @@ export function Dashboard({ contracts }: DashboardProps) {
   const [dailyActivity, setDailyActivity] = useState<any>(null);
   const [recentMoods, setRecentMoods] = useState<any[]>([]);
   const [loadingActivity, setLoadingActivity] = useState(true);
+  const [loadingMoreMoods, setLoadingMoreMoods] = useState(false);
+  const [hasMoreMoods, setHasMoreMoods] = useState(true);
+  const [moodPage, setMoodPage] = useState(0);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const allMoods = useRef<any[]>([]);
+  const MOODS_PER_PAGE = 10;
   const [stats, setStats] = useState({
     totalPoints: 0,
     currentStreak: 0,
@@ -19,6 +25,57 @@ export function Dashboard({ contracts }: DashboardProps) {
   });
 
   const getTodayDate = () => new Date().toISOString().split('T')[0];
+
+  // Load more moods function
+  const loadMoreMoods = useCallback(async () => {
+    if (loadingMoreMoods || !hasMoreMoods || !dbUser) return;
+
+    setLoadingMoreMoods(true);
+    try {
+      const startIndex = moodPage * MOODS_PER_PAGE;
+      const endIndex = startIndex + MOODS_PER_PAGE;
+      const newMoods = allMoods.current.slice(startIndex, endIndex);
+      
+      if (newMoods.length === 0) {
+        setHasMoreMoods(false);
+      } else {
+        setRecentMoods(prev => [...prev, ...newMoods]);
+        setMoodPage(prev => prev + 1);
+        
+        // Check if there are more moods to load
+        if (endIndex >= allMoods.current.length) {
+          setHasMoreMoods(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading more moods:', error);
+    } finally {
+      setLoadingMoreMoods(false);
+    }
+  }, [loadingMoreMoods, hasMoreMoods, moodPage, dbUser]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreMoods && !loadingMoreMoods) {
+          loadMoreMoods();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMoreMoods, loadingMoreMoods, loadMoreMoods]);
 
   useEffect(() => {
     async function fetchData() {
@@ -30,7 +87,13 @@ export function Dashboard({ contracts }: DashboardProps) {
           moodAPI.getMoodLogs(dbUser.id)
         ]);
         setDailyActivity(activity);
-        setRecentMoods(moods.slice(0, 5));
+        
+        // Store all moods and display first page
+        allMoods.current = moods;
+        const firstPageMoods = moods.slice(0, MOODS_PER_PAGE);
+        setRecentMoods(firstPageMoods);
+        setMoodPage(1);
+        setHasMoreMoods(moods.length > MOODS_PER_PAGE);
 
         // Calculate stats - prioritize blockchain data
         const points = userData?.totalPoints 
@@ -113,28 +176,31 @@ export function Dashboard({ contracts }: DashboardProps) {
         </div>
       </div>
 
-      {/* Recent Mood Logs - Mobile Optimized */}
+      {/* Recent Mood Logs - Mobile Optimized with Infinite Scroll */}
       {recentMoods.length > 0 && (
         <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm">
           <h3 className="text-base sm:text-xl font-bold mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-1.5 shadow-sm">
-              <img src="/emojis/calm.png" alt="Mood" className="w-full h-full object-contain" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0">
+              <img src="/emojis/calm.png" alt="Mood" className="w-full h-full object-contain drop-shadow-md" />
             </div>
             <span>Recent Moods</span>
+            <span className="ml-auto text-xs sm:text-sm text-gray-500 font-normal">
+              {recentMoods.length} {recentMoods.length === 1 ? 'entry' : 'entries'}
+            </span>
           </h3>
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
             {recentMoods.map((mood) => (
               <div
                 key={mood.id}
                 className="flex items-center justify-between p-3 sm:p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg hover:from-gray-100 hover:to-gray-150 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0 bg-white rounded-xl shadow-sm p-2">
-                    {mood.mood === 'happy' && <img src="/emojis/happy.png" alt="Happy" className="w-full h-full object-contain" />}
-                    {mood.mood === 'calm' && <img src="/emojis/calm.png" alt="Calm" className="w-full h-full object-contain" />}
-                    {mood.mood === 'neutral' && <img src="/emojis/neutral.png" alt="Neutral" className="w-full h-full object-contain" />}
-                    {mood.mood === 'not-great' && <img src="/emojis/down.png" alt="Not Great" className="w-full h-full object-contain" />}
-                    {mood.mood === 'sad' && <img src="/emojis/sad.png" alt="Sad" className="w-full h-full object-contain" />}
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center flex-shrink-0 p-2">
+                    {mood.mood === 'happy' && <img src="/emojis/happy.png" alt="Happy" className="w-full h-full object-contain drop-shadow-md" />}
+                    {mood.mood === 'calm' && <img src="/emojis/calm.png" alt="Calm" className="w-full h-full object-contain drop-shadow-md" />}
+                    {mood.mood === 'neutral' && <img src="/emojis/neutral.png" alt="Neutral" className="w-full h-full object-contain drop-shadow-md" />}
+                    {mood.mood === 'not-great' && <img src="/emojis/down.png" alt="Not Great" className="w-full h-full object-contain drop-shadow-md" />}
+                    {mood.mood === 'sad' && <img src="/emojis/sad.png" alt="Sad" className="w-full h-full object-contain drop-shadow-md" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium capitalize text-sm sm:text-base truncate">
@@ -160,6 +226,25 @@ export function Dashboard({ contracts }: DashboardProps) {
                 </div>
               </div>
             ))}
+            
+            {/* Loading indicator */}
+            {loadingMoreMoods && (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              </div>
+            )}
+            
+            {/* Intersection observer target */}
+            {hasMoreMoods && !loadingMoreMoods && (
+              <div ref={observerTarget} className="h-4" />
+            )}
+            
+            {/* End message */}
+            {!hasMoreMoods && recentMoods.length > MOODS_PER_PAGE && (
+              <div className="text-center py-3 text-xs sm:text-sm text-gray-500">
+                You've reached the end of your mood history 🎉
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -209,25 +209,25 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Profile Header - Minimalist */}
-      <div className="bg-white rounded-3xl p-6 text-center">
+    <div className="space-y-3">
+      {/* Profile Header - Compact */}
+      <div className="bg-white rounded-2xl p-4 text-center">
         {contracts.farcasterUser?.pfpUrl ? (
           <img 
             src={contracts.farcasterUser.pfpUrl} 
             alt="Profile" 
-            className="w-20 h-20 rounded-full mx-auto mb-3 border-2 border-gray-100" 
+            className="w-16 h-16 rounded-full mx-auto mb-2 border-2 border-gray-100" 
           />
         ) : (
-          <div className="w-20 h-20 rounded-full mx-auto mb-3 border-2 border-gray-100 overflow-hidden bg-gray-50">
-            <img src="/icons/profile.PNG" alt="Profile" className="w-full h-full object-cover" />
+          <div className="w-20 h-20 rounded-full mx-auto mb-2">
+            <img src="/icons/profile.PNG" alt="Profile" className="w-full h-full object-cover drop-shadow-lg" />
           </div>
         )}
-        <h1 className="text-xl font-bold text-gray-900 mb-1">
+        <h1 className="text-lg font-bold text-gray-900">
           {contracts.farcasterUser?.displayName || contracts.farcasterUser?.username || basename || (address ? truncateAddress(address) : 'Anonymous')}
         </h1>
         {contracts.farcasterUser?.username && (
-          <p className="text-sm text-gray-500">@{contracts.farcasterUser.username}</p>
+          <p className="text-xs text-gray-500">@{contracts.farcasterUser.username}</p>
         )}
       </div>
 
@@ -236,7 +236,7 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
         <div className="grid grid-cols-3 gap-1">
           <button 
             onClick={() => setActiveTab('stats')} 
-            className={`py-3 px-3 rounded-xl text-sm font-semibold transition-all ${
+            className={`py-3 px-2 rounded-xl text-xs font-semibold transition-all min-h-[44px] ${
               activeTab === 'stats' 
                 ? 'bg-blue-600 text-white' 
                 : 'text-gray-600 hover:bg-gray-50'
@@ -246,7 +246,7 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
           </button>
           <button 
             onClick={() => setActiveTab('history')} 
-            className={`py-3 px-3 rounded-xl text-sm font-semibold transition-all ${
+            className={`py-3 px-2 rounded-xl text-xs font-semibold transition-all min-h-[44px] ${
               activeTab === 'history' 
                 ? 'bg-blue-600 text-white' 
                 : 'text-gray-600 hover:bg-gray-50'
@@ -256,7 +256,7 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
           </button>
           <button 
             onClick={() => setActiveTab('nfts')} 
-            className={`py-3 px-3 rounded-xl text-sm font-semibold transition-all ${
+            className={`py-3 px-2 rounded-xl text-xs font-semibold transition-all min-h-[44px] ${
               activeTab === 'nfts' 
                 ? 'bg-blue-600 text-white' 
                 : 'text-gray-600 hover:bg-gray-50'
@@ -269,44 +269,44 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
 
       {/* Stats Tab */}
       {activeTab === 'stats' && (
-        <div className="space-y-6">
-          {/* Points - Large and Centered */}
-          <div className="bg-white rounded-3xl p-8 text-center">
-            <div className="text-5xl font-bold text-blue-600 mb-2">{stats?.totalPoints || 0}</div>
-            <p className="text-gray-500">Total Points</p>
+        <div className="space-y-3">
+          {/* Points & Streaks - Combined Grid */}
+          <div className="bg-white rounded-2xl p-4">
+            <div className="text-center pb-3 mb-3 border-b border-gray-100">
+              <div className="text-4xl font-bold text-blue-600 mb-1">{stats?.totalPoints || 0}</div>
+              <p className="text-xs text-gray-500">Total Points</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 mb-0.5">{stats?.journalStreak || 0}</div>
+                <p className="text-xs text-gray-500">Journal Streak</p>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 mb-0.5">{stats?.meditationStreak || 0}</div>
+                <p className="text-xs text-gray-500">Meditation Streak</p>
+              </div>
+            </div>
           </div>
 
-          {/* Streaks - Clean Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white rounded-2xl p-5 text-center">
-              <div className="text-3xl font-bold text-gray-900 mb-1">{stats?.journalStreak || 0}</div>
-              <p className="text-sm text-gray-500">Journal Streak</p>
-            </div>
-            <div className="bg-white rounded-2xl p-5 text-center">
-              <div className="text-3xl font-bold text-gray-900 mb-1">{stats?.meditationStreak || 0}</div>
-              <p className="text-sm text-gray-500">Meditation Streak</p>
-            </div>
-          </div>
-
-          {/* Activity Stats - Minimalist List */}
-          <div className="bg-white rounded-2xl p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Activity</h2>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                <span className="text-gray-600">Journals</span>
-                <span className="text-lg font-semibold text-gray-900">{stats?.totalJournals || 0}</span>
+          {/* Activity Stats - Compact List */}
+          <div className="bg-white rounded-2xl p-4">
+            <h2 className="text-sm font-bold text-gray-900 mb-3">Activity</h2>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between py-1.5 border-b border-gray-100">
+                <span className="text-xs text-gray-600">Journals</span>
+                <span className="text-sm font-semibold text-gray-900">{stats?.totalJournals || 0}</span>
               </div>
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                <span className="text-gray-600">Meditations</span>
-                <span className="text-lg font-semibold text-gray-900">{stats?.totalMeditations || 0}</span>
+              <div className="flex items-center justify-between py-1.5 border-b border-gray-100">
+                <span className="text-xs text-gray-600">Meditations</span>
+                <span className="text-sm font-semibold text-gray-900">{stats?.totalMeditations || 0}</span>
               </div>
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                <span className="text-gray-600">Mood Logs</span>
-                <span className="text-lg font-semibold text-gray-900">{stats?.totalMoods || 0}</span>
+              <div className="flex items-center justify-between py-1.5 border-b border-gray-100">
+                <span className="text-xs text-gray-600">Mood Logs</span>
+                <span className="text-sm font-semibold text-gray-900">{stats?.totalMoods || 0}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600">NFTs Earned</span>
-                <span className="text-lg font-semibold text-gray-900">{stats?.nftCount || 0}</span>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-xs text-gray-600">NFTs Earned</span>
+                <span className="text-sm font-semibold text-gray-900">{stats?.nftCount || 0}</span>
               </div>
             </div>
           </div>
@@ -318,8 +318,8 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
         <div className="space-y-4">
           {journals.length === 0 ? (
             <div className="bg-white rounded-3xl p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-3 opacity-30">
-                <img src="/icons/journal.png" alt="Journal" className="w-full h-full object-contain" />
+              <div className="w-20 h-20 mx-auto mb-3 opacity-30">
+                <img src="/icons/journal.png" alt="Journal" className="w-full h-full object-contain drop-shadow-md" />
               </div>
               <h3 className="text-lg font-bold mb-2 text-gray-900">No journals yet</h3>
               <p className="text-sm text-gray-500">Start writing to track your journey</p>
@@ -354,8 +354,8 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
         <div className="space-y-4">
           {achievements.length === 0 ? (
             <div className="bg-white rounded-3xl p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-3 opacity-30">
-                <img src="/icons/trophy.png" alt="Trophy" className="w-full h-full object-contain" />
+              <div className="w-20 h-20 mx-auto mb-3 opacity-30">
+                <img src="/icons/trophy.png" alt="Trophy" className="w-full h-full object-contain drop-shadow-md" />
               </div>
               <h3 className="text-lg font-bold mb-2 text-gray-900">No achievements yet</h3>
               <p className="text-sm text-gray-500">Keep building streaks to unlock NFTs</p>
@@ -368,7 +368,7 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
                   <div key={index} className="pb-3 border-b border-gray-100 last:border-0 last:pb-0">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
-                        <img src={achievement.icon} alt={achievement.title} className="w-8 h-8 object-contain" />
+                        <img src={achievement.icon} alt={achievement.title} className="w-10 h-10 object-contain drop-shadow-md" />
                         <div>
                           <h3 className="font-semibold text-sm text-gray-900">{achievement.title}</h3>
                           <p className="text-xs text-gray-500">{achievement.current}/{achievement.target}</p>
@@ -377,7 +377,7 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
                       {achievement.status === 'unlocked' && !achievement.minted && (
                         <button 
                           onClick={() => onMintClick(achievement)} 
-                          className="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
+                          className="px-4 py-2.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors min-h-[44px]"
                         >
                           Mint
                         </button>

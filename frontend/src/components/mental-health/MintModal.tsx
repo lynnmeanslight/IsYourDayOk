@@ -161,8 +161,8 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
               </div>
             </form>
 
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-xs text-blue-900">
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-xs text-amber-900">
                 <strong>Note:</strong> Your improvement rating will be permanently stored on the blockchain with your NFT.
               </p>
             </div>
@@ -187,14 +187,14 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
             <p className="text-muted-foreground mb-4">
               Your {achievement.title} NFT has been successfully minted!
             </p>
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6">
-              <p className="text-sm text-blue-600 font-medium">
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-6">
+              <p className="text-sm text-green-700 font-medium">
                 NFT successfully minted to your wallet!
               </p>
             </div>
             <button
               onClick={onClose}
-              className="w-full bg-blue-600 text-white rounded-lg px-6 py-3 font-medium hover:bg-blue-700 transition-colors"
+              className="w-full bg-green-600 text-white rounded-lg px-6 py-3 font-medium hover:bg-green-700 transition-colors"
             >
               View My Achievements
             </button>
