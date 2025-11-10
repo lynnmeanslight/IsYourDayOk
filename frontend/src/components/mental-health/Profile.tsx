@@ -398,30 +398,49 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
                   <img src="/icons/trophy.png" alt="Trophy" className="w-full h-full object-contain" />
                 </div>
                 <h3 className="text-sm font-bold mb-1 text-gray-900">No NFTs yet</h3>
-                <p className="text-xs text-gray-500">Mint achievements from Dashboard</p>
+                <p className="text-xs text-gray-500 mb-1">Mint achievements from Dashboard</p>
+                <p className="text-[10px] text-gray-400">Complete streaks to unlock NFTs</p>
               </div>
             ) : (
               <div className="space-y-3">
+                <div className="bg-white rounded-2xl p-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold text-gray-900">Your Collection</h3>
+                    <span className="text-[10px] text-gray-500">{mintedAchievements.length} {mintedAchievements.length === 1 ? 'NFT' : 'NFTs'}</span>
+                  </div>
+                </div>
+                
                 {mintedAchievements.map((achievement, index) => (
-                  <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+                  <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                     {/* NFT Image Section */}
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 aspect-square w-full flex items-center justify-center relative">
+                    <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-blue-100 aspect-video w-full flex items-center justify-center relative p-6">
                       <img 
                         src={achievement.icon} 
                         alt={achievement.title} 
-                        className="w-3/4 h-3/4 object-contain drop-shadow-2xl"
+                        className="w-2/3 h-2/3 object-contain drop-shadow-2xl"
                       />
-                      <div className="absolute bottom-4 right-4 bg-blue-600 text-white rounded-full p-2.5 shadow-lg">
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1.5 shadow-lg">
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
                     </div>
                     
                     {/* NFT Info Section */}
-                    <div className="p-4">
-                      <h3 className="font-bold text-base text-gray-900 mb-1">{achievement.title}</h3>
-                      <p className="text-xs text-blue-600 font-medium mb-3">✓ Minted on Base</p>
+                    <div className="p-3">
+                      <h3 className="font-bold text-sm text-gray-900 mb-1">{achievement.title}</h3>
+                      <p className="text-[10px] text-gray-600 mb-2">{achievement.description}</p>
+                      
+                      <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-100">
+                        <div className="flex-1">
+                          <p className="text-[9px] text-gray-500">Status</p>
+                          <p className="text-[10px] font-medium text-green-600">✓ Minted</p>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[9px] text-gray-500">Chain</p>
+                          <p className="text-[10px] font-medium text-blue-600">Base</p>
+                        </div>
+                      </div>
                       
                       {/* View on BaseScan Button */}
                       {address && (
@@ -429,9 +448,12 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
                           href={`https://basescan.org/address/${address}#nfttransfers`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block w-full text-center py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
+                          className="flex items-center justify-center gap-1.5 w-full py-1.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-medium rounded-lg transition-colors"
                         >
-                          View on BaseScan
+                          <span>View on BaseScan</span>
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
                         </a>
                       )}
                     </div>
