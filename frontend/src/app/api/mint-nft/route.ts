@@ -18,6 +18,8 @@ const ACHIEVEMENT_TYPE_MAP = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('📥 Mint NFT request:', body);
+    
     const { achievementId, userAddress, achievementType, improvementRating } =
       body;
 
@@ -28,6 +30,7 @@ export async function POST(request: NextRequest) {
       !achievementType ||
       improvementRating === undefined
     ) {
+      console.error('❌ Missing required fields:', { achievementId, userAddress, achievementType, improvementRating });
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -109,6 +112,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Mint the NFT
+    console.log('🚀 Minting NFT with params:', {
+      address: NFT_CONTRACT_ADDRESS,
+      userAddress,
+      achievementTypeEnum,
+      improvementRating,
+      metadataUri
+    });
+    
     const hash = await walletClient.writeContract({
       address: NFT_CONTRACT_ADDRESS,
       abi: IsYourDayOkNFTABI,
@@ -121,13 +132,14 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    console.log("Transaction hash:", hash);
+    console.log("✅ Transaction hash:", hash);
 
     // Wait for transaction receipt
     const receipt = await walletClient.waitForTransactionReceipt({ hash });
-    console.log("Transaction confirmed:", receipt.status);
+    console.log("✅ Transaction confirmed with status:", receipt.status);
 
     if (receipt.status !== "success") {
+      console.error('❌ Transaction failed with status:', receipt.status);
       throw new Error("Transaction failed");
     }
 
@@ -141,21 +153,62 @@ export async function POST(request: NextRequest) {
       );
       if (achievementMintedLog && achievementMintedLog.topics[1]) {
         tokenId = BigInt(achievementMintedLog.topics[1]).toString();
+        console.log('🎫 Extracted tokenId from event:', tokenId);
       }
     }
 
-    // Update achievement in database
-    await prisma.nFTAchievement.update({
-      where: { id: achievementId },
-      data: {
-        minted: true,
-        mintedAt: new Date(),
-        tokenId,
-        contractAddress: NFT_CONTRACT_ADDRESS,
-        transactionHash: hash,
-      },
+    console.log("💾 Updating achievement in database:", {
+      achievementId,
+      tokenId,
+      hash,
     });
 
+    // Update achievement in database
+    try {
+      // First verify the achievement exists
+      const existingAchievement = await prisma.nFTAchievement.findUnique({
+        where: { id: achievementId },
+      });
+
+      if (!existingAchievement) {
+        console.error('❌ Achievement not found in database:', achievementId);
+        throw new Error(`Achievement ${achievementId} not found in database`);
+      }
+
+      console.log('📋 Found existing achievement:', {
+        id: existingAchievement.id,
+        type: existingAchievement.type,
+        minted: existingAchievement.minted,
+      });
+
+      const updatedAchievement = await prisma.nFTAchievement.update({
+        where: { id: achievementId },
+        data: {
+          minted: true,
+          mintedAt: new Date(),
+          tokenId,
+          contractAddress: NFT_CONTRACT_ADDRESS,
+          transactionHash: hash,
+        },
+      });
+      console.log("✅ Achievement updated successfully in database:", {
+        id: updatedAchievement.id,
+        tokenId: updatedAchievement.tokenId,
+        minted: updatedAchievement.minted,
+      });
+    } catch (dbError: any) {
+      console.error("❌ Failed to update achievement in database:", dbError);
+      // NFT was minted but DB update failed - log this critical error
+      // Still return success since the blockchain transaction succeeded
+      console.error("⚠️ CRITICAL: NFT minted but database update failed", {
+        achievementId,
+        tokenId,
+        transactionHash: hash,
+        error: dbError.message,
+      });
+    }
+
+    console.log('🎉 Mint completed successfully');
     return NextResponse.json({
       success: true,
       tokenId,

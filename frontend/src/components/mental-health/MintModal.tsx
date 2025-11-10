@@ -62,6 +62,13 @@ export function MintModal({ achievement, contracts, onClose }: MintModalProps) {
       const mintData = await mintResponse.json();
 
       // Success - blockchain transaction confirmed and database updated
+      console.log('NFT minted successfully:', mintData);
+      
+      // Refresh contract data to get updated achievements
+      if (contracts.refreshContractData) {
+        await contracts.refreshContractData();
+      }
+      
       setStep('success');
     } catch (err: any) {
       console.error('Minting error:', err);

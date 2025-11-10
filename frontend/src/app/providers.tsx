@@ -22,7 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider>
       <FrameProvider>
-        <Analytics />
+        {/* <Analytics /> */}
         {children}
       </FrameProvider>
     </WagmiProvider>

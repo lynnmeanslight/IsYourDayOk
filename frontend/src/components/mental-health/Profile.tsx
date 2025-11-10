@@ -124,7 +124,8 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
             console.error('Error fetching activity data:', err);
           }
         }
-
+        console.log(contracts);
+        
         if (contracts.dbUser?.id) {
           try {
             const achievementsData = await nftAPI.getAchievements(contracts.dbUser.id);
@@ -158,6 +159,7 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
               } else if (current > 0) {
                 status = 'in-progress';
               }
+              console.log(mintedAch);
               
               return {
                 id: mintedAch?.id || metadata.id,
@@ -176,6 +178,9 @@ export function Profile({ contracts, onMintClick }: ProfileProps) {
                 transactionHash: mintedAch?.transactionHash,
               };
             });
+            console.log(allAchievements);
+            console.log("Lee");
+            
             
             setAchievements(allAchievements);
             
