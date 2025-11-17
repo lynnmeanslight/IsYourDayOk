@@ -50,6 +50,22 @@ export const metadata: Metadata = {
     creator: "@IsYourDayOk",
   },
   manifest: "/manifest.json",
+  other: {
+    "fc:miniapp": JSON.stringify({
+      version: "next",
+      imageUrl: "https://is-your-day-ok.vercel.app/icons/IsYourDayOkfinal.png",
+      button: {
+        title: "Launch IsYourDayOk",
+        action: {
+          type: "launch_miniapp",
+          name: "IsYourDayOk",
+          url: "https://is-your-day-ok.vercel.app",
+          splashImageUrl: "https://is-your-day-ok.vercel.app/icons/IsYourDayOkfinal.png",
+          splashBackgroundColor: "#3B82F6",
+        },
+      },
+    }),
+  },
 };
 
 export const viewport: Viewport = {
@@ -70,25 +86,4 @@ export default async function RootLayout({
       </body>
     </html>
   );
-}
-
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    other: {
-      "fc:miniapp": JSON.stringify({
-        version: "next",
-        imageUrl: "https://is-your-day-ok.vercel.app/icons/IsYourDayOkfinal.png",
-        button: {
-          title: "Launch IsYourDayOk",
-          action: {
-            type: "launch_miniapp",
-            name: "IsYourDayOk",
-            url: "https://is-your-day-ok.vercel.app",
-            splashImageUrl: "https://is-your-day-ok.vercel.app/icons/IsYourDayOkfinal.png",
-            splashBackgroundColor: "#3B82F6",
-          },
-        },
-      }),
-    },
-  };
 }
