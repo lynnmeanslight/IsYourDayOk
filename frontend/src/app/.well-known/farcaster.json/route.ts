@@ -77,10 +77,6 @@ export async function GET() {
     },
     baseBuilder: {
       ownerAddress: "0x13aa8Ccb6d6ffC659446fF0737C668dB581F4C34",
-      allowedAddresses: [
-        "0x76967Ce1457D65703445FbE024Dd487A151ad993",
-        "0x13aa8Ccb6d6ffC659446fF0737C668dB581F4C34",
-      ],
     },
   };
 
