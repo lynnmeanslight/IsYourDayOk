@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 
-
 import "~/app/globals.css";
 import { Providers } from "~/app/providers";
 import { METADATA } from "~/lib/utils";
@@ -8,17 +7,28 @@ import { METADATA } from "~/lib/utils";
 export const metadata: Metadata = {
   title: METADATA.name,
   description: METADATA.description,
-  keywords: ['mental health', 'wellbeing', 'blockchain', 'Base', 'NFT', 'meditation', 'journaling', 'mood tracker', 'self-care', 'mental wellness'],
-  authors: [{ name: 'IsYourDayOk Team' }],
-  creator: 'IsYourDayOk',
-  publisher: 'IsYourDayOk',
+  keywords: [
+    "mental health",
+    "wellbeing",
+    "blockchain",
+    "Base",
+    "NFT",
+    "meditation",
+    "journaling",
+    "mood tracker",
+    "self-care",
+    "mental wellness",
+  ],
+  authors: [{ name: "IsYourDayOk Team" }],
+  creator: "IsYourDayOk",
+  publisher: "IsYourDayOk",
   icons: {
-    icon: '/icons/IsYourDayOkfinal.png',
-    apple: '/icons/IsYourDayOkfinal.png',
+    icon: "/icons/IsYourDayOkfinal.png",
+    apple: "/icons/IsYourDayOkfinal.png",
   },
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
+    type: "website",
+    locale: "en_US",
     title: METADATA.name,
     description: METADATA.description,
     images: [
@@ -26,24 +36,24 @@ export const metadata: Metadata = {
         url: METADATA.bannerImageUrl,
         width: 1200,
         height: 630,
-        alt: 'IsYourDayOk - Mental Health Tracker',
-      }
+        alt: "IsYourDayOk - Mental Health Tracker",
+      },
     ],
     url: METADATA.homeUrl,
-    siteName: METADATA.name
+    siteName: METADATA.name,
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: METADATA.name,
     description: METADATA.description,
     images: [METADATA.bannerImageUrl],
-    creator: '@IsYourDayOk',
+    creator: "@IsYourDayOk",
   },
-  manifest: '/manifest.json',
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
 };
@@ -60,4 +70,25 @@ export default async function RootLayout({
       </body>
     </html>
   );
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    other: {
+      "fc:miniapp": JSON.stringify({
+        version: "next",
+        imageUrl: "https://is-your-day-ok.vercel.app/icons/IsYourDayOkfinal.png",
+        button: {
+          title: "Launch IsYourDayOk",
+          action: {
+            type: "launch_miniapp",
+            name: "IsYourDayOk",
+            url: "https://is-your-day-ok.vercel.app",
+            splashImageUrl: "https://is-your-day-ok.vercel.app/icons/IsYourDayOkfinal.png",
+            splashBackgroundColor: "#3B82F6",
+          },
+        },
+      }),
+    },
+  };
 }
