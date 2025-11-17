@@ -9,7 +9,14 @@ export async function GET() {
       signature:
         "1g+j/kUVdOwJTuyVM5S2gX8EWzMjTHnbRRCMNiXhU6Qz3AWy85H7UrIBcA4FZ5m+YGkI1zzMMYPQa5jPPmbssRs=",
     },
-        miniapp: {
+    baseBuilder: {
+      ownerAddress: "0x13aa8Ccb6d6ffC659446fF0737C668dB581F4C34",
+      allowedAddresses: [
+        "0x76967Ce1457D65703445FbE024Dd487A151ad993",
+        "0x13aa8Ccb6d6ffC659446fF0737C668dB581F4C34",
+      ],
+    },
+    miniapp: {
       version: "1",
       name: METADATA.name,
       iconUrl: METADATA.iconImageUrl,
@@ -41,13 +48,6 @@ export async function GET() {
       canonicalDomain: "is-your-day-ok.vercel.app",
       noindex: false,
       tags: ["mental-health", "wellness", "mindfulness", "baseapp", "miniapp"],
-    },
-    baseBuilder: {
-      ownerAddress: "0x13aa8Ccb6d6ffC659446fF0737C668dB581F4C34",
-      allowedAddresses: [
-        "0x76967Ce1457D65703445FbE024Dd487A151ad993",
-        "0x13aa8Ccb6d6ffC659446fF0737C668dB581F4C34",
-      ],
     },
   };
 
