@@ -39,7 +39,7 @@ export async function GET() {
       ],
       requiredChains: ["eip155:8453", "eip155:8453", "eip155:10"],
       canonicalDomain: "is-your-day-ok.vercel.app",
-      noindex: false,
+      // noindex: false,
       tags: ["mental-health", "wellness", "mindfulness", "baseapp", "miniapp"],
     },
     miniapp: {
@@ -72,7 +72,7 @@ export async function GET() {
       ],
       requiredChains: ["eip155:8453", "eip155:8453", "eip155:10"],
       canonicalDomain: "is-your-day-ok.vercel.app",
-      noindex: false,
+      // noindex: false,
       tags: ["mental-health", "wellness", "mindfulness", "baseapp", "miniapp"],
     },
     baseBuilder: {
